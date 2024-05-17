@@ -1,4 +1,4 @@
- module Frontend exposing (Model, app)
+module Frontend exposing (Model, app)
 
 import Html exposing (Html, text)
 import Html.Attributes exposing (style)
@@ -37,8 +37,10 @@ app =
 init : ( Model, Cmd FrontendMsg )
 init =
     ( { counter = 0
-    , clientId = "" }
-    , Cmd.none )
+      , clientId = ""
+      }
+    , Cmd.none
+    )
 
 
 update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )

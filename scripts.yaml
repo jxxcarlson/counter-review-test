@@ -1,0 +1,4 @@
+      
+scripts:
+
+  review: npx elm-review --template jxxcarlson/elm-review-codeinstaller/example

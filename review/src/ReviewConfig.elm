@@ -12,9 +12,17 @@ when inside the directory containing this file.
 -}
 
 import Install.TypeVariant
+import Install.FieldInTypeAlias
+import Install.Initializer
+import Install.ClauseInCase
 import Review.Rule exposing (Rule)
 
 
 config : List Rule
 config =
-    [Install.TypeVariant.makeRule "Types" "ToBackend" "ResetCounter"]
+    [ Install.TypeVariant.makeRule "Types" "ToBackend" "ResetCounter"
+    , Install.ClauseInCase.init "Backend" "updateFromFrontend" "ResetCounter" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
+        |> Install.ClauseInCase.makeRule
+    -- , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
+    -- , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
+    ]

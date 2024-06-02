@@ -20,12 +20,22 @@ import Review.Rule exposing (Rule)
 
 config : List Rule
 config =
-    [  Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
-     , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
-     , Install.ClauseInCase.init "Frontend" "update" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
+    [ Install.ClauseInCase.init "Frontend" "update" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
+              |> Install.ClauseInCase.withInsertAfter "Increment"
               |> Install.ClauseInCase.makeRule
-     -- , Install.ClauseInCase.init "Backend" "updateFromFrontend" "ResetCounter" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
-     --   |> Install.ClauseInCase.makeRule
-     --, Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
-     --, Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
+
     ]
+
+
+--config : List Rule
+--config =
+--    [  Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
+--     , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
+--      , Install.ClauseInCase.init "Frontend" "update" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
+--              |> Install.ClauseInCase.withInsertAfter "Increment"
+--              |> Install.ClauseInCase.makeRule
+--      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "ResetCounter" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
+--        |> Install.ClauseInCase.makeRule
+--     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
+--     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
+--    ]

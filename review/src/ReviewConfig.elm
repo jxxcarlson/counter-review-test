@@ -38,6 +38,15 @@ config =
 
 
 
+viewFunction1 = """view model =
+     Html.div [ style "padding" "30px" ]
+         [ Html.button [ onClick Increment ] [ text "+" ]
+         , Html.text (String.fromInt model.counter)
+         , Html.button [ onClick Decrement ] [ text "-" ]
+         , Html.div [] [ Html.text "Click me then refresh me!" ]
+         ]"""
+
+         
 viewFunction = """view model =
       Html.div [ style "padding" "50px" ]
           [ Html.button [ onClick Increment ] [ text "+" ]

@@ -15,7 +15,7 @@ import Install.TypeVariant
 import Install.FieldInTypeAlias
 import Install.Initializer
 import Install.ClauseInCase
-import Install.FunctionBody
+import Install.Function
 import Review.Rule exposing (Rule)
 
 
@@ -32,8 +32,10 @@ config =
         |> Install.ClauseInCase.makeRule
      , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
      , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
-     , Install.FunctionBody.makeRule "Frontend" "view" "CounterNewValue" viewFunction
+     , Install.Function.init "Frontend" "view" viewFunction |>Install.Function.makeRule
+     -- , Install.Function.init "Frontend" "foo" "foo model = ()" |>Install.Function.makeRule
     ]
+
 
 
 viewFunction = """view model =

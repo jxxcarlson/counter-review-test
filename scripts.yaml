@@ -1,2 +1,6 @@
 scripts:
-  review: npx elm-review --template jxxcarlson/elm-review-codeinstaller/example
+  review:
+    - git co src/
+    - npx elm-review --fix-all
+      # --template jxxcarlson/elm-review-codeinstaller/example
+  clean: git co src

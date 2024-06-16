@@ -23,7 +23,6 @@ type FrontendMsg
 type ToBackend
     = CounterIncremented
     | CounterDecremented
-    | CounterReset
 
 
 type BackendMsg

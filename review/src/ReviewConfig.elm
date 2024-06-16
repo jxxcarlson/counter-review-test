@@ -75,51 +75,6 @@ config =
     ]
 
 
-
-{-
-
-    , pendingLogins :
-        AssocList.Dict
-            SessionId
-            { loginAttempts : Int
-            , emailAddress : EmailAddress
-            , creationTime : Time.Posix
-            , loginCode : Int
-            }
-
-    , sessionInfo : Session.SessionInfo
-    }
--}
-
-
-{-
-type alias BackendModel =
-    { randomAtmosphericNumbers : Maybe (List Int)
-    , localUuidData : Maybe LocalUUID.Data
-    , time : Time.Posix
-
-    -- MAGICLINK
-    , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
-    , pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth
-    , sessions : Dict SessionId Auth.Common.UserInfo
-    , secretCounter : Int
-    , sessionDict : AssocList.Dict SessionId String -- Dict sessionId usernames
-    , pendingLogins :
-        AssocList.Dict
-            SessionId
-            { loginAttempts : Int
-            , emailAddress : EmailAddress
-            , creationTime : Time.Posix
-            , loginCode : Int
-            }
-    , log : MagicLink.Types.Log
-    , users : Dict.Dict User.EmailString User.User
-    , userNameToEmailString : Dict.Dict User.Username User.EmailString
-    , sessionInfo : Session.SessionInfo
-    }
--}
-
-
 configOld : List Rule
 configOld =
     [

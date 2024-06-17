@@ -20,7 +20,7 @@ import Install.ClauseInCase
 import Install.Function
 import Review.Rule exposing (Rule)
 
-config = config1
+config = config2
 
 
 config1 : List Rule
@@ -129,17 +129,18 @@ config2 =
           , Install.Import.init "Backend" "Task" |>Install.Import.makeRule
           , Install.Import.init "Backend" "Time" |>Install.Import.makeRule
           , Install.Import.init "Backend" "User" |>Install.Import.makeRule
+          ---
+          , Install.ClauseInCase.init
+             "Frontend" "updateFromBacked"
+             "AuthToFrontend authToFrontendMsg"
+             "MagicLink.Auth.updateFromBackend authToFrontendMsg model"
+                  |> Install.ClauseInCase.makeRule
 
     ]
 
 {-
 
 
-import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
-
-
-init : ( BackendModel, Cmd BackendMsg )
-init =
   updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
   updateFromBackendLoaded msg model =
       case msg of

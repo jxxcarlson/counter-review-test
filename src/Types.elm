@@ -18,13 +18,11 @@ type FrontendMsg
     = Increment
     | Decrement
     | FNoop
-    | Reset
 
 
 type ToBackend
     = CounterIncremented
     | CounterDecremented
-    | CounterReset
 
 
 type BackendMsg

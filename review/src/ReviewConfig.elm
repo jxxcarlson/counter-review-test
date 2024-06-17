@@ -20,21 +20,19 @@ import Install.ClauseInCase
 import Install.Function
 import Review.Rule exposing (Rule)
 
-config = config2
-
+config = config1
 
 config1 : List Rule
 config1 =
     [
        Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
      , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
-     , Install.ClauseInCase.init "Frontend" "update" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
         |> Install.ClauseInCase.withInsertAfter "Increment"
         |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
         |> Install.ClauseInCase.makeRule
-     , Install.Function.init ["Frontend"]"view" viewFunction |>Install.Function.makeRule
-
+     , Install.Function.init ["Pages", "Counter"]"view" viewFunction |>Install.Function.makeRule
     ]
 
 viewFunction = """view model =
@@ -44,7 +42,7 @@ viewFunction = """view model =
         , Html.button [ onClick Decrement ] [ text "-" ]
         , Html.div [ style "padding-top" "15px", style "padding-bottom" "15px" ] [ Html.text "Click me then refresh me!" ]
         , Html.button [ onClick Reset ] [ text "Reset" ]
-        ]"""
+        ] |> Element.html   """
 
 
 config2 : List Rule

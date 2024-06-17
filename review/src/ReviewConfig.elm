@@ -15,6 +15,7 @@ import Install.Import
 import Install.TypeVariant
 import Install.FieldInTypeAlias
 import Install.Type
+import Install.Initializer
 import Install.ClauseInCase
 import Install.Function
 import Review.Rule exposing (Rule)
@@ -25,6 +26,7 @@ config =
     [
      -- TYPES
            Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
+         , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData" ]
      -- TYPES IMPORTS
           , Install.Import.init "Types" "Auth.Common" |>Install.Import.makeRule
           , Install.Import.init "Types" "Url" |> Install.Import.withExposedValues ["Url"]|>Install.Import.makeRule
@@ -32,6 +34,7 @@ config =
           , Install.Import.init "Types" "User" |>Install.Import.makeRule
           , Install.Import.init "Types" "Session" |>Install.Import.makeRule
           , Install.Import.init "Types" "Dict" |> Install.Import.withExposedValues ["Dict"] |>Install.Import.makeRule
+          , Install.Import.init "Types" "AssocList" |>Install.Import.makeRule
           -- Type Frontend, MagicLink
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authFlow : Auth.Common.Flow"
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authRedirectBaseUrl : Url"
@@ -72,8 +75,53 @@ config =
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "RegistrationError String"
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "SignInError String"
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserSignedIn (Maybe User.User)"
+          -- Initialize BackendModel
+          , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
+          , Install.Initializer.makeRule "Backend" "init" "sessions" "Dict.empty"
+          , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+          , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+          , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
+          , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Dict.empty"
+          , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Nothing"
+          , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Nothing"
+          , Install.Initializer.makeRule "Backend" "init" "secretCounter" "0"
+          , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
+          , Install.Initializer.makeRule "Backend" "init" "pendingEmailAuths" "Dict.empty"
+          , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
+          , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
+          , Install.Initializer.makeRule "Backend" "init" "log" "[]"
+          -- Backend import
+          , Install.Import.init "Backend" "Auth.Common" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "AssocList" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "Auth.Flow" |> Install.Import.makeRule
+          , Install.Import.init "Backend" "Dict" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "Helper" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "Lamdera" |> Install.Import.withExposedValues ["ClientId", "SessionId"] |>Install.Import.makeRule
+          , Install.Import.init "Backend" "LocalUUID" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "MagicLink.Auth" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "Process" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "Task" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "Time" |>Install.Import.makeRule
+          , Install.Import.init "Backend" "User" |>Install.Import.makeRule
+
     ]
 
+{-
+
+
+import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
+
+
+init : ( BackendModel, Cmd BackendMsg )
+init =
+
+
+    , Cmd.batch
+        [ Time.now |> Task.perform GotFastTick
+        , Helper.getAtmosphericRandomNumbers
+        ]
+    )
+-}
 
 configOld : List Rule
 configOld =

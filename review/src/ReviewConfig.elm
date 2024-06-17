@@ -20,9 +20,35 @@ import Install.ClauseInCase
 import Install.Function
 import Review.Rule exposing (Rule)
 
+config = config1
 
-config : List Rule
-config =
+
+config1 : List Rule
+config1 =
+    [
+       Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
+     , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
+     , Install.ClauseInCase.init "Frontend" "update" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
+        |> Install.ClauseInCase.withInsertAfter "Increment"
+        |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
+        |> Install.ClauseInCase.makeRule
+     , Install.Function.init ["Frontend"]"view" viewFunction |>Install.Function.makeRule
+
+    ]
+
+viewFunction = """view model =
+    Html.div [ style "padding" "50px" ]
+        [ Html.button [ onClick Increment ] [ text "+" ]
+        , Html.div [ style "padding" "10px" ] [ Html.text (String.fromInt model.counter) ]
+        , Html.button [ onClick Decrement ] [ text "-" ]
+        , Html.div [ style "padding-top" "15px", style "padding-bottom" "15px" ] [ Html.text "Click me then refresh me!" ]
+        , Html.button [ onClick Reset ] [ text "Reset" ]
+        ]"""
+
+
+config2 : List Rule
+config2 =
     [
      -- TYPES
            Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
@@ -114,6 +140,52 @@ import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(.
 
 init : ( BackendModel, Cmd BackendMsg )
 init =
+  updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
+  updateFromBackendLoaded msg model =
+      case msg of
+          AuthToFrontend authToFrontendMsg ->
+              MagicLink.Auth.updateFromBackend authToFrontendMsg model
+
+          GotBackendModel beModel ->
+              ( { model | backendModel = Just beModel }, Cmd.none )
+
+          -- MAGICLINK
+          AuthSuccess userInfo ->
+              -- TODO (placholder)
+              case userInfo.username of
+                  Just username ->
+                      ( { model | authFlow = Auth.Common.Authorized userInfo.email username }, Cmd.none )
+
+                  Nothing ->
+                      ( model, Cmd.none )
+
+          UserInfoMsg _ ->
+              -- TODO (placholder)
+              ( model, Cmd.none )
+
+          SignInError message ->
+              MagicLink.Frontend.handleSignInError model message
+
+          RegistrationError str ->
+              MagicLink.Frontend.handleRegistrationError model str
+
+          CheckSignInResponse _ ->
+              ( model, Cmd.none )
+
+          GetLoginTokenRateLimited ->
+              ( model, Cmd.none )
+
+          UserRegistered user ->
+              MagicLink.Frontend.userRegistered model user
+
+          UserSignedIn maybeUser ->
+              ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
+
+          GotMessage message ->
+              ( { model | message = message }, Cmd.none )
+
+          AdminInspectResponse backendModel ->
+              ( { model | backendModel = Just backendModel }, Cmd.none )
 
 
     , Cmd.batch
@@ -123,36 +195,4 @@ init =
     )
 -}
 
-configOld : List Rule
-configOld =
-    [
-       Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
-     , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
-     , Install.ClauseInCase.init "Frontend" "update" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
-        |> Install.ClauseInCase.withInsertAfter "Increment"
-        |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
-        |> Install.ClauseInCase.makeRule
-     , Install.Function.init ["Frontend"]"view" viewFunction |>Install.Function.makeRule
-
-    ]
-
-viewFunction = """view model =
-    Html.div [ style "padding" "50px" ]
-        [ Html.button [ onClick Increment ] [ text "+" ]
-        , Html.div [ style "padding" "10px" ] [ Html.text (String.fromInt model.counter) ]
-        , Html.button [ onClick Decrement ] [ text "-" ]
-        , Html.div [ style "padding-top" "15px", style "padding-bottom" "15px" ] [ Html.text "Click me then refresh me!" ]
-        , Html.button [ onClick Reset ] [ text "Reset" ]
-        ]"""
-
-
-viewFunction2 = """view model =
-     Html.div [ style "padding" "50px" ]
-         [ Html.button [ onClick Increment ] [ text "+" ]
-         , Html.div [ style "padding" "10px" ] [ Html.text (String.fromInt model.counter) ]
-         , Html.button [ onClick Decrement ] [ text "-" ]
-         , Html.div [ style "padding-top" "15px", style "padding-bottom" "15px" ] [ Html.text "Click me then refresh me!" ]
-         , Html.button [ onClick Reset ] [ text "Reset" ]
-         ]"""
 

@@ -4,9 +4,6 @@ import Browser
 import Browser.Dom
 import Browser.Events
 import Browser.Navigation
-import Html exposing (Html, text)
-import Html.Attributes exposing (style)
-import Html.Events exposing (onClick)
 import Http
 import Json.Decode
 import Lamdera exposing (sendToBackend)
@@ -176,12 +173,3 @@ updateFromBackendLoaded msg model =
     case msg of
         _ ->
             ( model, Cmd.none )
-
-
-view model =
-    Html.div [ style "padding" "50px" ]
-        [ Html.button [ onClick Increment ] [ text "+" ]
-        , Html.div [ style "padding" "10px" ] [ Html.text (String.fromInt model.counter) ]
-        , Html.button [ onClick Decrement ] [ text "-" ]
-        , Html.div [ style "padding-top" "15px", style "padding-bottom" "15px" ] [ Html.text "Click me then refresh me!" ]
-        ]

@@ -61,6 +61,7 @@ config2 =
           , Install.Import.init "Types" "Dict" |> Install.Import.withExposedValues ["Dict"] |>Install.Import.makeRule
           , Install.Import.init "Types" "AssocList" |>Install.Import.makeRule
           , Install.Import.init "Types" "Http" |>Install.Import.makeRule
+          , Install.Import.init "Types" "LocalUUID" |>Install.Import.makeRule
           -- Type Frontend, MagicLink
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authFlow : Auth.Common.Flow"
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authRedirectBaseUrl : Url"

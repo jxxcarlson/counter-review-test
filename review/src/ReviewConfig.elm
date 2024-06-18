@@ -63,18 +63,18 @@ config2 =
           , Install.Import.init "Types" "Http" |>Install.Import.makeRule
           , Install.Import.init "Types" "LocalUUID" |>Install.Import.makeRule
           -- Type Frontend, MagicLink
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authFlow : Auth.Common.Flow"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authRedirectBaseUrl : Url"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "signinForm : MagicLink.Types.SigninForm"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "loginErrorMessage : Maybe String"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "signInStatus : MagicLink.Types.SignInStatus"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "currentUserData : Maybe User.LoginData"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "authFlow : Auth.Common.Flow"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "authRedirectBaseUrl : Url"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signinForm : MagicLink.Types.SigninForm"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "loginErrorMessage : Maybe String"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signInStatus : MagicLink.Types.SignInStatus"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUserData : Maybe User.LoginData"
           -- Type Frontend, User
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "currentUser : Maybe User.User"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "signInState : SignInState"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "realname : String"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "username : String"
-          , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "email : String"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUser : Maybe User.User"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signInState : SignInState"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "realname : String"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "username : String"
+          , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "email : String"
           -- Type BackendModel
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth"
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"

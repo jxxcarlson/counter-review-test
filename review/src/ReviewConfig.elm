@@ -99,6 +99,7 @@ config2 =
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserRegistered (User.User)"
 
     -- Backend init
+    -- Looks like fields pendingLogins√, sessionInfo√, and userNameToEmailString
     , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "sessions" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
@@ -107,16 +108,21 @@ config2 =
     , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "secretCounter" "0"
     , Install.Initializer.makeRule "Backend" "init" "pendingEmailAuths" "Dict.empty"
-    , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "pendingLogins" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "pendingLogins" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "log" "[]"
 
     -- Type BackendModel
+    -- Looks like fields pendingLogins√, sessionInfo√, and userNameToEmailString√
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessions : Dict SessionId Auth.Common.UserInfo"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "secretCounter : Int"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionDict : AssocList.Dict SessionId String"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins: MagicLink.Types.PendingLogins"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins : AssocList.empty"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "log : MagicLink.Types.Log"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"

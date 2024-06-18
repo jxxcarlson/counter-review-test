@@ -106,9 +106,6 @@ signOut model =
         , email = ""
         , signInState = SignedOut
 
-        -- ADMIN
-        , adminDisplay = ADUser
-
         --
         , backendModel = Nothing
         , message = ""

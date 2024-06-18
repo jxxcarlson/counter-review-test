@@ -7,7 +7,6 @@ import Html.Events exposing (onClick)
 import Types exposing (FrontendMsg(..), LoadedModel)
 
 
-view : LoadedModel -> Element FrontendMsg
 view model =
     Html.div [ style "padding" "50px" ]
         [ Html.button [ onClick Increment ] [ text "+" ]

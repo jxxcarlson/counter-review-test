@@ -102,7 +102,7 @@ config2 =
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "RegistrationError String"
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "SignInError String"
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserSignedIn (Maybe User.User)"
-          -- Initialize BackendModel
+          , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserRegistered (User.User)"
           , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
           , Install.Initializer.makeRule "Backend" "init" "sessions" "Dict.empty"
           , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
@@ -139,10 +139,18 @@ config2 =
 
          --
          , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.FrontendMsg"
+         , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authFrontendMsg" "MagicLink.Auth.updateFrontend authFrontendMsg model"
+               |> Install.ClauseInCase.makeRule
+         , Install.Import.init "Frontend" "MagicLink.Auth" |> Install.Import.makeRule
     ]
 
 {-
+| UserSignedIn (Maybe User.User)
+    | UserRegistered User.User
 
+
+AuthFrontendMsg authFrontendMsg ->
+            MagicLink.Auth.updateFrontend authFrontendMsg model
 
   updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
   updateFromBackendLoaded msg model =

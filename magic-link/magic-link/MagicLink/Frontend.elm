@@ -21,8 +21,7 @@ import MagicLink.Types exposing (SigninForm(..))
 import Route exposing (Route(..))
 import Types
     exposing
-        ( AdminDisplay(..)
-        , FrontendMsg(..)
+        ( FrontendMsg(..)
         , LoadedModel
         , SignInState(..)
         , ToBackend(..)
@@ -89,7 +88,7 @@ signInWithTokenResponseC signInData =
         Cmd.none
 
 
-signOut : { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, adminDisplay : AdminDisplay, backendModel : Maybe d, message : String } -> ( { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, adminDisplay : AdminDisplay, backendModel : Maybe d, message : String }, Cmd frontendMsg )
+signOut : { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, backendModel : Maybe d, message : String } -> ( { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, adminDisplay : AdminDisplay, backendModel : Maybe d, message : String }, Cmd frontendMsg )
 signOut model =
     ( { model
         | showTooltip = False

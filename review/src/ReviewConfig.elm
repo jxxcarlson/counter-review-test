@@ -112,6 +112,7 @@ config2 =
     , Install.Initializer.makeRule "Backend" "init" "pendingLogins" "AssocList.empty"
     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "AssocList.empty"
     , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "Dict.empty"
+    , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
     , Install.Initializer.makeRule "Backend" "init" "log" "[]"
 
     -- Type BackendModel

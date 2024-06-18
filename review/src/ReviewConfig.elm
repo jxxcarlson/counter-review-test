@@ -85,6 +85,8 @@ config2 =
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
+          , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
+
         -- Type ToBackend
           , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
           , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String"
@@ -145,66 +147,7 @@ config2 =
     ]
 
 {-
-| UserSignedIn (Maybe User.User)
-    | UserRegistered User.User
 
-
-AuthFrontendMsg authFrontendMsg ->
-            MagicLink.Auth.updateFrontend authFrontendMsg model
-
-  updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
-  updateFromBackendLoaded msg model =
-      case msg of
-          AuthToFrontend authToFrontendMsg ->
-              MagicLink.Auth.updateFromBackend authToFrontendMsg model
-
-          GotBackendModel beModel ->
-              ( { model | backendModel = Just beModel }, Cmd.none )
-
-          -- MAGICLINK
-          AuthSuccess userInfo ->
-              -- TODO (placholder)
-              case userInfo.username of
-                  Just username ->
-                      ( { model | authFlow = Auth.Common.Authorized userInfo.email username }, Cmd.none )
-
-                  Nothing ->
-                      ( model, Cmd.none )
-
-          UserInfoMsg _ ->
-              -- TODO (placholder)
-              ( model, Cmd.none )
-
-          SignInError message ->
-              MagicLink.Frontend.handleSignInError model message
-
-          RegistrationError str ->
-              MagicLink.Frontend.handleRegistrationError model str
-
-          CheckSignInResponse _ ->
-              ( model, Cmd.none )
-
-          GetLoginTokenRateLimited ->
-              ( model, Cmd.none )
-
-          UserRegistered user ->
-              MagicLink.Frontend.userRegistered model user
-
-          UserSignedIn maybeUser ->
-              ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
-
-          GotMessage message ->
-              ( { model | message = message }, Cmd.none )
-
-          AdminInspectResponse backendModel ->
-              ( { model | backendModel = Just backendModel }, Cmd.none )
-
-
-    , Cmd.batch
-        [ Time.now |> Task.perform GotFastTick
-        , Helper.getAtmosphericRandomNumbers
-        ]
-    )
 -}
 
 

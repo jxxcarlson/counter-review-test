@@ -81,14 +81,11 @@ signInWithTokenResponseM signInData model =
 
 signInWithTokenResponseC : User.LoginData -> Cmd msg
 signInWithTokenResponseC signInData =
-    if List.member User.AdminRole signInData.roles then
-        Lamdera.sendToBackend GetBackendModel
-
-    else
-        Cmd.none
+    -- TODO wtf?
+    Cmd.none
 
 
-signOut : { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, backendModel : Maybe d, message : String } -> ( { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, adminDisplay : AdminDisplay, backendModel : Maybe d, message : String }, Cmd frontendMsg )
+signOut : { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, backendModel : Maybe d, message : String } -> ( { a | showTooltip : Bool, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, signInState : SignInState, backendModel : Maybe d, message : String }, Cmd frontendMsg )
 signOut model =
     ( { model
         | showTooltip = False

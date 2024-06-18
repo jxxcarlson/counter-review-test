@@ -16,10 +16,6 @@ import Types exposing (..)
 import User
 
 
-type alias Model =
-    BackendModel
-
-
 app =
     Lamdera.backend
         { init = init
@@ -29,7 +25,10 @@ app =
         }
 
 
-init : ( Model, Cmd BackendMsg )
+
+--init : ( BackendModel, Cmd BackendMsg )
+
+
 init =
     ( { counter = 0
       , users = Dict.empty
@@ -47,7 +46,7 @@ init =
     )
 
 
-update : BackendMsg -> Model -> ( Model, Cmd BackendMsg )
+update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
     case msg of
         ClientConnected sessionId clientId ->
@@ -57,7 +56,7 @@ update msg model =
             ( model, Cmd.none )
 
 
-updateFromFrontend : SessionId -> ClientId -> ToBackend -> Model -> ( Model, Cmd BackendMsg )
+updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
         CounterIncremented ->

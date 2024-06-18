@@ -88,6 +88,7 @@ config2 =
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
           , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time: Time.Posix"
+          , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers: Maybe (List Int)"
 
         -- Type ToBackend
           , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
@@ -107,18 +108,15 @@ config2 =
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "SignInError String"
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserSignedIn (Maybe User.User)"
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserRegistered (User.User)"
+          -- Backend init
           , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
           , Install.Initializer.makeRule "Backend" "init" "sessions" "Dict.empty"
           , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
-          , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
           , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
-          , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Dict.empty"
-          , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Nothing"
           , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Nothing"
-          , Install.Initializer.makeRule "Backend" "init" "secretCounter" "0"
           , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
+          , Install.Initializer.makeRule "Backend" "init" "secretCounter" "0"
           , Install.Initializer.makeRule "Backend" "init" "pendingEmailAuths" "Dict.empty"
-          , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
           , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
           , Install.Initializer.makeRule "Backend" "init" "log" "[]"
           -- Backend import

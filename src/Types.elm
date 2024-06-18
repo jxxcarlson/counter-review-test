@@ -17,16 +17,6 @@ import User
 
 type alias BackendModel =
     { counter : Int
-    , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
-    , pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth
-    , sessions : Dict SessionId Auth.Common.UserInfo
-    , secretCounter : Int
-    , sessionDict : AssocList.Dict SessionId String
-    , pendingLogins : MagicLink.Types.PendingLogins
-    , log : MagicLink.Types.Log
-    , users : Dict.Dict User.EmailString User.User
-    , userNameToEmailString : Dict.Dict User.Username User.EmailString
-    , sessionInfo : Session.SessionInfo
     }
 
 
@@ -68,32 +58,23 @@ type FrontendMsg
     | AuthFrontendMsg MagicLink.Types.FrontendMsg
 
 
+
+--| AuthFrontendMsg MagicLink.Types.FrontendMsg
+
+
 type ToBackend
     = CounterIncremented
     | CounterDecremented
-    | RequestSignup String String String
-    | AddUser String String String
-    | AuthToBackend Auth.Common.ToBackend
 
 
 type BackendMsg
     = ClientConnected SessionId ClientId
     | Noop
-    | GotAtmosphericRandomNumbers (Result Http.Error String)
-    | AutoLogin SessionId User.LoginData
-    | AuthBackendMsg Auth.Common.BackendMsg
 
 
 type ToFrontend
     = CounterNewValue Int String
-    | UserSignedIn (Maybe User.User)
-    | SignInError String
-    | RegistrationError String
-    | GetLoginTokenRateLimited
-    | CheckSignInResponse (Result BackendDataStatus User.LoginData)
-    | UserInfoMsg (Maybe Auth.Common.UserInfo)
-    | AuthSuccess Auth.Common.UserInfo
-    | AuthToFrontend Auth.Common.ToFrontend
+    | UserRegistered User.User
 
 
 type SignInState

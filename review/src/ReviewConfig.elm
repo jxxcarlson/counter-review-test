@@ -20,7 +20,7 @@ import Install.ClauseInCase
 import Install.Function
 import Review.Rule exposing (Rule)
 
-config = config1
+config = config2
 
 config1 : List Rule
 config1 =
@@ -59,6 +59,7 @@ config2 =
           , Install.Import.init "Types" "Session" |>Install.Import.makeRule
           , Install.Import.init "Types" "Dict" |> Install.Import.withExposedValues ["Dict"] |>Install.Import.makeRule
           , Install.Import.init "Types" "AssocList" |>Install.Import.makeRule
+          , Install.Import.init "Types" "Http" |>Install.Import.makeRule
           -- Type Frontend, MagicLink
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authFlow : Auth.Common.Flow"
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authRedirectBaseUrl : Url"
@@ -90,6 +91,7 @@ config2 =
         -- Type BackendMsg
           , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
           , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.LoginData"
+          , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
         -- Type ToFrontend
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthToFrontend Auth.Common.ToFrontend"
           , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthSuccess Auth.Common.UserInfo"

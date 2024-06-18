@@ -25,22 +25,9 @@ app =
         }
 
 
-
---init : ( BackendModel, Cmd BackendMsg )
-
-
+init : ( BackendModel, Cmd BackendMsg )
 init =
     ( { counter = 0
-      , users = Dict.empty
-      , sessions = Dict.empty
-      , time = Time.millisToPosix 0
-      , log = []
-      , randomAtmosphericNumbers = Nothing
-      , sessionDict = AssocList.empty
-      , localUuidData = Dict.empty
-      , pendingEmailAuths = Dict.empty
-      , pendingAuths = Nothing
-      , secretCounter = 0
       }
     , Cmd.none
     )

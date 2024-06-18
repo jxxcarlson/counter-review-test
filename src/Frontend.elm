@@ -7,6 +7,7 @@ import Browser.Navigation
 import Http
 import Json.Decode
 import Lamdera exposing (sendToBackend)
+import MagicLink.Auth
 import Route
 import Task
 import Time
@@ -137,6 +138,9 @@ updateLoaded msg model =
 
         Decrement ->
             ( { model | counter = model.counter - 1 }, sendToBackend CounterDecremented )
+
+        AuthFrontendMsg authFrontendMsg ->
+            MagicLink.Auth.updateFrontend authFrontendMsg model
 
 
 scrollToTop : Cmd FrontendMsg

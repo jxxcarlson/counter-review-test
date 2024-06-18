@@ -7,6 +7,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Http
 import Lamdera exposing (ClientId, SessionId)
+import LocalUUID
 import MagicLink.Types
 import Route exposing (Route)
 import Session
@@ -42,6 +43,17 @@ type alias LoadedModel =
     , message : String
     , showTooltip : Bool
     , counter : Int
+    , authFlow : Auth.Common.Flow
+    , authRedirectBaseUrl : Url
+    , signinForm : MagicLink.Types.SigninForm
+    , loginErrorMessage : Maybe String
+    , signInStatus : MagicLink.Types.SignInStatus
+    , currentUserData : Maybe User.LoginData
+    , currentUser : Maybe User.User
+    , signInState : SignInState
+    , realname : String
+    , username : String
+    , email : String
     }
 
 
@@ -65,16 +77,30 @@ type FrontendMsg
 type ToBackend
     = CounterIncremented
     | CounterDecremented
+    | AuthToBackend Auth.Common.ToBackend
+    | AddUser String String String
+    | RequestSignup String String String
 
 
 type BackendMsg
     = ClientConnected SessionId ClientId
     | Noop
+    | GotAtmosphericRandomNumbers (Result Http.Error String)
+    | AutoLogin SessionId User.LoginData
+    | AuthBackendMsg Auth.Common.BackendMsg
 
 
 type ToFrontend
     = CounterNewValue Int String
     | UserRegistered User.User
+    | AuthToFrontend Auth.Common.ToFrontend
+    | UserSignedIn (Maybe User.User)
+    | AuthSuccess Auth.Common.UserInfo
+    | SignInError String
+    | UserInfoMsg (Maybe Auth.Common.UserInfo)
+    | RegistrationError String
+    | CheckSignInResponse (Result BackendDataStatus User.LoginData)
+    | GetLoginTokenRateLimited
 
 
 type SignInState

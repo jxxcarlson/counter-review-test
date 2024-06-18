@@ -1,6 +1,6 @@
 scripts:
   review:
     - git co src/
-    - npx elm-review --fix-all
+    - npx elm-review --fix-all --fix-limit=10
       # --template jxxcarlson/elm-review-codeinstaller/example
   clean: git co src/

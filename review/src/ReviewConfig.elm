@@ -33,7 +33,7 @@ config1 =
         |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
         |> Install.ClauseInCase.makeRule
-     , Install.Function.init ["Frontend"]"view" viewFunction |>Install.Function.makeRule
+    -- , Install.Function.init "Frontend" "view" viewFunction |>Install.Function.makeRule
 
     ]
 
@@ -54,14 +54,9 @@ config2 =
            Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
          , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData" ]
      -- TYPES IMPORTS
-          , Install.Import.init "Types" "Auth.Common" |>Install.Import.makeRule
-          , Install.Import.init "Types" "Url" |> Install.Import.withExposedValues ["Url"]|>Install.Import.makeRule
-          , Install.Import.init "Types" "MagicLink.Types" |>Install.Import.makeRule
-          , Install.Import.init "Types" "User" |>Install.Import.makeRule
-          , Install.Import.init "Types" "Session" |>Install.Import.makeRule
-          , Install.Import.init "Types" "Dict" |> Install.Import.withExposedValues ["Dict"] |>Install.Import.makeRule
-          , Install.Import.init "Types" "AssocList" |>Install.Import.makeRule
-          -- Type Frontend, MagicLink
+          , Install.Import.initSimple "Types" ["Auth.Common", "MagicLink.Types", "User", "Session",  "Dict", "AssocList"] |>Install.Import.makeRule
+          , Install.Import.init "Types" [{moduleToImport = "Url", alias_ = Nothing, exposedValues = Just ["Url"] }] |>Install.Import.makeRule
+            -- Type Frontend, MagicLink
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authFlow : Auth.Common.Flow"
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "authRedirectBaseUrl : Url"
           , Install.FieldInTypeAlias.makeRule "Types" "FrontendModel" "signinForm : MagicLink.Types.SigninForm"
@@ -117,18 +112,11 @@ config2 =
           , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
           , Install.Initializer.makeRule "Backend" "init" "log" "[]"
           -- Backend import
-          , Install.Import.init "Backend" "Auth.Common" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "AssocList" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "Auth.Flow" |> Install.Import.makeRule
-          , Install.Import.init "Backend" "Dict" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "Helper" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "Lamdera" |> Install.Import.withExposedValues ["ClientId", "SessionId"] |>Install.Import.makeRule
-          , Install.Import.init "Backend" "LocalUUID" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "MagicLink.Auth" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "Process" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "Task" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "Time" |>Install.Import.makeRule
-          , Install.Import.init "Backend" "User" |>Install.Import.makeRule
+          , Install.Import.initSimple "Backend"
+             ["Auth.Common", "AssocList", "Auth.Flow" , "Dict", "Helper",  "LocalUUID",
+               "MagicLink.Auth", "Process", "Task", "Time", "User"]
+               |>Install.Import.makeRule
+          , Install.Import.init "Backend" [{moduleToImport = "Lamdera", alias_ = Nothing, exposedValues = Just ["ClientId", "SessionId"]}] |>Install.Import.makeRule
           ---
           , Install.ClauseInCase.init
              "Frontend" "updateFromBacked"

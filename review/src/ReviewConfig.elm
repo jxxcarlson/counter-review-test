@@ -51,6 +51,7 @@ config2 =
      -- TYPES
            Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
          , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData" ]
+         , Install.Type.makeRule "Types" "Foo" [ "Bar" ]
      -- TYPES IMPORTS
           , Install.Import.init "Types" "Auth.Common" |>Install.Import.makeRule
           , Install.Import.init "Types" "Url" |> Install.Import.withExposedValues ["Url"]|>Install.Import.makeRule
@@ -136,6 +137,8 @@ config2 =
              "MagicLink.Auth.updateFromBackend authToFrontendMsg model"
                   |> Install.ClauseInCase.makeRule
 
+         --
+         , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.FrontendMsg"
     ]
 
 {-

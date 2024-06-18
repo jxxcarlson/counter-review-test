@@ -20,7 +20,7 @@ import Install.ClauseInCase
 import Install.Function
 import Review.Rule exposing (Rule)
 
-config = config2
+config = config1
 
 
 config1 : List Rule

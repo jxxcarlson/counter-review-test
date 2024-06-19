@@ -25,14 +25,16 @@ config = config1
 
 config1 : List Rule
 config1 =
-    [
+    [ -- Add two new type variants:
        Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
      , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
+     -- Add new clauses to the update functions:
      , Install.ClauseInCase.init "Frontend" "update" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
         |> Install.ClauseInCase.withInsertAfter "Increment"
         |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
         |> Install.ClauseInCase.makeRule
+     -- Change the view function:
      , Install.Function.init "Frontend" "view" viewFunction |>Install.Function.makeRule
 
     ]

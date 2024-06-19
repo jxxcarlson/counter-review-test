@@ -44,7 +44,7 @@ viewFunction = """view model =
         , Html.button [ onClick Decrement ] [ text "-" ]
         , Html.div [ style "padding-top" "15px", style "padding-bottom" "15px" ] [ Html.text "Click me then refresh me!" ]
         , Html.button [ onClick Reset ] [ text "Reset" ]
-        ]"""
+        ] |> Element.html """
 
 
 config2 : List Rule

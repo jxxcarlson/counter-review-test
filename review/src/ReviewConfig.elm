@@ -70,8 +70,11 @@ configUsers =
     [ -- TYPES
       Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
 
+          , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData" ]
+     , Install.TypeVariant.makeRule "Types" "ToFrontend" "CheckSignInResponse (Result BackendDataStatus User.LoginData)"
+
     -- TYPES IMPORTS
-    , Install.Import.initSimple "Types" [ "Auth.Common", "User", "Dict", "Http", "LocalUUID", "MagicLink.Types" ] |> Install.Import.makeRule
+    , Install.Import.initSimple "Types" ["Session", "AssocList", "Auth.Common", "User", "Dict", "Http", "LocalUUID", "MagicLink.Types" ] |> Install.Import.makeRule
     , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
 
     -- Type Frontend, User
@@ -80,7 +83,7 @@ configUsers =
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "realname : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "username : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "email : String"
-
+--
     --
     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> Install.ClauseInCase.makeRule
@@ -94,8 +97,19 @@ configUsers =
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "RegistrationError String"
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserSignedIn (Maybe User.User)"
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserRegistered (User.User)"
+        , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthToFrontend Auth.Common.ToFrontend"
+        , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthSuccess Auth.Common.UserInfo"
+        , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserInfoMsg (Maybe Auth.Common.UserInfo)"
+        , Install.TypeVariant.makeRule "Types" "ToFrontend" "GetLoginTokenRateLimited"
+               , Install.TypeVariant.makeRule "Types" "ToFrontend" "SignInError String"
+             , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthToFrontend Auth.Common.ToFrontend"
+
+
     , Install.TypeVariant.makeRule "Types" "AuthFrontendMsg" "MagicLink.Types.FrontendMsg"
 
+
+    -- Route
+    , Install.TypeVariant.makeRule "Route" "Route" "TermsOfServicePageRoute"
     -- Frontend, install
     , Install.Import.initSimple "Frontend" [ "Auth.Common", "MagicLink.Types", "MagicLink.LoginForm" ] |> Install.Import.makeRule
 
@@ -108,11 +122,21 @@ configUsers =
     , Install.Initializer.makeRule "Backend" "init" "counter" "AssocList.empty"
 
     -- Type BackendModel
+
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessions : Dict.Dict SessionId Auth.Common.UserInfo"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "secretCounter : Int"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionDict : AssocList.Dict SessionId String"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins: MagicLink.Types.PendingLogins"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingAuth"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingEmailAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins : AssocList.empty"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "log : MagicLink.Types.Log"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time: Time.Posix"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers: Maybe (List Int)"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
 
     -- Backend import
     , Install.Import.initSimple "Backend" [ "Auth.Flow", "MagicLink.Backend","MagicLink.Auth", "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
@@ -142,9 +166,32 @@ configUsers =
 
     --
     , Install.Function.init "Frontend" "tryLoading" tryLoading |> Install.Function.makeRule
+    , Install.Function.init "Route" "encode" encodeRoutes_ |> Install.Function.makeRule
     ]
 
+encodeRoutes_ = """encode : Route -> String
+encode route =
+    Url.Builder.absolute
+        (case route of
+            HomepageRoute ->
+                []
 
+            TermsOfServicePageRoute ->
+                [ "tos" ]
+
+            CounterPageRoute ->
+                [ "counter" ]
+        )
+        (case route of
+            HomepageRoute ->
+                []
+
+            TermsOfServicePageRoute ->
+                []
+
+            CounterPageRoute ->
+                []
+        )"""
 tryLoading =
     """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =
@@ -195,8 +242,7 @@ tryLoading loadingModel =
 --config2 : List Rule
 --config2 =
 --    [ -- TYPES
---      Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
---    , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData" ]
+
 --    , Install.Type.makeRule "Types" "Foo" [ "Bar" ]
 --
 --    -- TYPES IMPORTS
@@ -231,15 +277,7 @@ tryLoading loadingModel =
 --    , Install.TypeVariant.makeRule "Types" "ToBackend" "RequestSignup String String String"
 --
 --    -- Type ToFrontend
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthToFrontend Auth.Common.ToFrontend"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthSuccess Auth.Common.UserInfo"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserInfoMsg (Maybe Auth.Common.UserInfo)"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "CheckSignInResponse (Result BackendDataStatus User.LoginData)"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "GetLoginTokenRateLimited"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "RegistrationError String"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "SignInError String"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserSignedIn (Maybe User.User)"
---    , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserRegistered (User.User)"
+
 --
 --    -- Backend init
 --    -- Looks like fields pendingLogins√, sessionInfo√, and userNameToEmailString
@@ -260,21 +298,7 @@ tryLoading loadingModel =
 --
 --    -- Type BackendModel
 --    -- Looks like fields pendingLogins√, sessionInfo√, and userNameToEmailString√
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessions : Dict SessionId Auth.Common.UserInfo"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "secretCounter : Int"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionDict : AssocList.Dict SessionId String"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins: MagicLink.Types.PendingLogins"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins : AssocList.empty"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "log : MagicLink.Types.Log"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time: Time.Posix"
---    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers: Maybe (List Int)"
---
+
 --    -- Backend import
 --    , Install.Import.init "Backend" "Auth.Common" |> Install.Import.makeRule
 --    , Install.Import.init "Backend" "AssocList" |> Install.Import.makeRule

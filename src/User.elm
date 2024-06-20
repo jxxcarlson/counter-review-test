@@ -22,6 +22,7 @@ type alias User =
     , updated_at : Time.Posix
     , roles : List Role
     , recentLoginEmails : List Time.Posix
+    , verified : Maybe Bool
     }
 
 

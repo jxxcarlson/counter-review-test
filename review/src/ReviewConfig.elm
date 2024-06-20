@@ -38,11 +38,17 @@ configReset =
     , Install.ClauseInCase.init "Frontend" "updateLoaded" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
         |> Install.ClauseInCase.withInsertAfter "Increment"
         |> Install.ClauseInCase.makeRule
-    , Install.ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )"
-        |> Install.ClauseInCase.makeRule
+    , Install.ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )" |> Install.ClauseInCase.makeRule
     , Install.Function.init "Pages.Counter" "view" viewFunction |> Install.Function.makeRule
     ]
-
+ --AuthToBackend authMsg ->
+ --           Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model
+ --
+ --       AddUser realname username email ->
+ --           MagicLink.Backend.addUser model clientId email realname username
+ --
+ --       RequestSignup realname username email ->
+ --           MagicLink.Backend.requestSignUp model clientId realname username email
 
 viewFunction =
     """view model =
@@ -54,6 +60,10 @@ viewFunction =
         ] |> Element.html   """
 
 -- CONFIG USERS
+--
+--RequestSignup _ _ _
+--    AddUser _ _ _
+--    AuthToBackend _
 
 configUsers : List Rule
 configUsers =
@@ -70,6 +80,11 @@ configUsers =
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "realname : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "username : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "email : String"
+
+    --
+    , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> Install.ClauseInCase.makeRule
+    , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> Install.ClauseInCase.makeRule
+    , Install.ClauseInCase.init "Backend" "updateFromFrontend" "RequestSignup realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> Install.ClauseInCase.makeRule
 
     -- Type ToBackend
     , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String"
@@ -100,8 +115,9 @@ configUsers =
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
 
     -- Backend import
-    , Install.Import.initSimple "Backend" [ "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
+    , Install.Import.initSimple "Backend" [ "Auth.Flow", "MagicLink.Backend","MagicLink.Auth", "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
     , Install.Import.init "Backend" [ { moduleToImport = "Lamdera", alias_ = Nothing, exposedValues = Just [ "ClientId", "SessionId" ] } ] |> Install.Import.makeRule
+
 
     --
     , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.FrontendMsg"

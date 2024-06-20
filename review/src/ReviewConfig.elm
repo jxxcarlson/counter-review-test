@@ -132,23 +132,26 @@ configUsers =
 
     -- Type BackendModel
 
+--, sessionInfo : Session.SessionInfo
+--    , sessions : Dict.Dict SessionId Auth.Common.UserInfo
+
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessions : Dict.Dict SessionId Auth.Common.UserInfo"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "secretCounter : Int"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionDict : AssocList.Dict SessionId String"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins: MagicLink.Types.PendingLogins"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingAuth"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingEmailAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins : AssocList.empty"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "log : MagicLink.Types.Log"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins : AssocList.Dict Lamdera.SessionId { loginAttempts : Int emailAddress : EmailAddress, creationTime : Time.Posix, loginCode : Int }"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "log : List ( Time.Posix, MagicLink.Types.LogItem )"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo :  Dict.Dict SessionId Session.Interaction"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time: Time.Posix"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers: Maybe (List Int)"
 
     -- Backend import
-    , Install.Import.initSimple "Backend" [ "Auth.Flow", "MagicLink.Backend","MagicLink.Auth", "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
+    , Install.Import.initSimple "Backend" [ "Auth.Flow","MagicLink.Types", "MagicLink.Backend","MagicLink.Auth", "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
     , Install.Import.init "Backend" [ { moduleToImport = "Lamdera", alias_ = Nothing, exposedValues = Just [ "ClientId", "SessionId" ] } ] |> Install.Import.makeRule
 
 

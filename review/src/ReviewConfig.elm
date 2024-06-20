@@ -44,7 +44,7 @@ viewFunction =
         [ Html.button [ onClick Increment ] [ text "+" ]
         , Html.div [ style "padding" "10px" ] [ Html.text (String.fromInt model.counter) ]
         , Html.button [ onClick Decrement ] [ text "-" ]
-        , Html.button [ onClick Reset ] [ text "Reset" ]
+        , Html.div [] [Html.button [ onClick Reset, style "margin-top" "10px"] [ text "Reset" ]]
         ] |> Element.html   """
 
 configUsers : List Rule

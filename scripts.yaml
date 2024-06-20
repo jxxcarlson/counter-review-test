@@ -4,3 +4,6 @@ scripts:
     - npx elm-review --fix-all
       # --template jxxcarlson/elm-review-codeinstaller/example
   clean: git co src/
+  commit:
+    - git co src/
+    - git ci -a

@@ -2,8 +2,6 @@
     "type": "application",
     "source-directories": [
         "src",
-        "magic-link/lamdera-auth",
-        "magic-link/magic-link",
         "magic-link/elm-email"
     ],
     "elm-version": "0.19.1",

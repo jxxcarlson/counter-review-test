@@ -22,11 +22,11 @@ import Review.Rule exposing (Rule)
 
 
 config =
-    config2
+    configReset
 
 
-config1 : List Rule
-config1 =
+configReset : List Rule
+configReset =
     [ Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
     , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
     , Install.ClauseInCase.init "Frontend" "updateLoaded" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
@@ -44,10 +44,54 @@ viewFunction =
         [ Html.button [ onClick Increment ] [ text "+" ]
         , Html.div [ style "padding" "10px" ] [ Html.text (String.fromInt model.counter) ]
         , Html.button [ onClick Decrement ] [ text "-" ]
-        , Html.div [ style "padding-top" "15px", style "padding-bottom" "15px" ] [ Html.text "Click me then refresh me!" ]
         , Html.button [ onClick Reset ] [ text "Reset" ]
         ] |> Element.html   """
 
+configUsers : List Rule
+configUsers =
+    [ -- TYPES
+      Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
+    -- TYPES IMPORTS
+    , Install.Import.init "Types" "User" |> Install.Import.makeRule
+    , Install.Import.init "Types" "Dict" |> Install.Import.withExposedValues [ "Dict" ] |> Install.Import.makeRule
+    , Install.Import.init "Types" "Http" |> Install.Import.makeRule
+    , Install.Import.init "Types" "LocalUUID" |> Install.Import.makeRule
+    -- Type Frontend, User
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUser : Maybe User.User"
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signInState : SignInState"
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "realname : String"
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "username : String"
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "email : String"
+    -- Type ToBackend
+    , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String"
+    , Install.TypeVariant.makeRule "Types" "ToBackend" "RequestSignup String String String"
+    -- Type ToFrontend
+    , Install.TypeVariant.makeRule "Types" "ToFrontend" "RegistrationError String"
+    , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserSignedIn (Maybe User.User)"
+    , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserRegistered (User.User)"
+    -- Backend init
+    , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
+    , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+    , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
+    , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Nothing"
+    , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "AssocList.empty"
+    -- Type BackendModel
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time: Time.Posix"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers: Maybe (List Int)"
+
+    -- Backend import
+     , Install.Import.init "Backend" "Dict" |> Install.Import.makeRule
+    , Install.Import.init "Backend" "Helper" |> Install.Import.makeRule
+    , Install.Import.init "Backend" "Lamdera" |> Install.Import.withExposedValues [ "ClientId", "SessionId" ] |> Install.Import.makeRule
+    , Install.Import.init "Backend" "LocalUUID" |> Install.Import.makeRule
+    , Install.Import.init "Backend" "Task" |> Install.Import.makeRule
+    , Install.Import.init "Backend" "Time" |> Install.Import.makeRule
+    , Install.Import.init "Backend" "User" |> Install.Import.makeRule
+    -- Type BackendMsg
+    , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
+    ]
 
 config2 : List Rule
 config2 =

@@ -8,7 +8,6 @@ import Url.Parser
 type Route
     = HomepageRoute
     | CounterPageRoute
-    | TermsOfServicePageRoute
 
 
 decode : Url -> Route
@@ -27,17 +26,11 @@ encode route =
             HomepageRoute ->
                 []
 
-            TermsOfServicePageRoute ->
-                [ "tos" ]
-
             CounterPageRoute ->
                 [ "counter" ]
         )
         (case route of
             HomepageRoute ->
-                []
-
-            TermsOfServicePageRoute ->
                 []
 
             CounterPageRoute ->

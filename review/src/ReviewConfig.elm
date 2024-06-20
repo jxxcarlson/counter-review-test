@@ -21,9 +21,15 @@ import Install.TypeVariant
 import Review.Rule exposing (Rule)
 
 
-config =
-    configReset
 
+-- CONFIG, Possibilities: configReset, configUsers
+
+
+config =
+    configUsers
+
+
+-- CONFIG RESET
 
 configReset : List Rule
 configReset =
@@ -47,6 +53,7 @@ viewFunction =
         , Html.div [] [Html.button [ onClick Reset, style "margin-top" "10px"] [ text "Reset" ]]
         ] |> Element.html   """
 
+-- CONFIG USERS
 
 configUsers : List Rule
 configUsers =
@@ -54,8 +61,8 @@ configUsers =
       Install.Type.makeRule "Types" "SignInState" [ "SignedOut", "SignUp", "SignedIn" ]
 
     -- TYPES IMPORTS
-    , Install.Import.initSimple "Types" ["User", "Dict","Http", "LocalUUID"] |> Install.Import.makeRule
-    , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ]}] |> Install.Import.makeRule
+    , Install.Import.initSimple "Types" [ "Auth.Common", "User", "Dict", "Http", "LocalUUID", "MagicLink.Types" ] |> Install.Import.makeRule
+    , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
 
     -- Type Frontend, User
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUser : Maybe User.User"
@@ -72,26 +79,43 @@ configUsers =
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "RegistrationError String"
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserSignedIn (Maybe User.User)"
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "UserRegistered (User.User)"
+    , Install.TypeVariant.makeRule "Types" "AuthFrontendMsg" "MagicLink.Types.FrontendMsg"
+
+    -- Frontend, install
+    , Install.Import.initSimple "Frontend" [ "Auth.Common", "MagicLink.Types", "MagicLink.LoginForm" ] |> Install.Import.makeRule
 
     -- Backend init
     , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
     , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Nothing"
-    , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
+    , Install.Initializer.makeRule "Backend" "init" "counter" "AssocList.empty"
 
     -- Type BackendModel
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time: Time.Posix"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers: Maybe (List Int)"
-    -- Backend import
-    , Install.Import.initSimple "Backend" ["Dict", "Helper", "LocalUUID", "Task", "Time", "User"] |> Install.Import.makeRule
-    , Install.Import.init "Backend" [{moduleToImport = "Lamdera", alias_ = Nothing, exposedValues = Just [ "ClientId", "SessionId" ]}] |> Install.Import.makeRule
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
 
+    -- Backend import
+    , Install.Import.initSimple "Backend" [ "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
+    , Install.Import.init "Backend" [ { moduleToImport = "Lamdera", alias_ = Nothing, exposedValues = Just [ "ClientId", "SessionId" ] } ] |> Install.Import.makeRule
+
+    --
+    , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.FrontendMsg"
+    , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authFrontendMsg" "MagicLink.Auth.updateFrontend authFrontendMsg model"
+        |> Install.ClauseInCase.makeRule
+    , Install.Import.initSimple "Frontend" [ "MagicLink.Auth" ] |> Install.Import.makeRule
 
     -- Type BackendMsg
     , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
+
+    -- ToBackend
+    , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
+    , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String"
+    , Install.TypeVariant.makeRule "Types" "ToBackend" "RequestSignup String String String"
 
     -- Type Frontend, User
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUser : Maybe User.User"
@@ -99,11 +123,14 @@ configUsers =
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "realname : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "username : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "email : String"
+
     --
-    ---, Install.Function.
+    , Install.Function.init "Frontend" "tryLoading" tryLoading |> Install.Function.makeRule
     ]
 
-tryLoading = """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
+
+tryLoading =
+    """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =
     Maybe.map
         (\\window ->
@@ -145,6 +172,9 @@ tryLoading loadingModel =
         loadingModel.window
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
 """
+
+
+
 --
 --config2 : List Rule
 --config2 =
@@ -262,9 +292,6 @@ tryLoading loadingModel =
 --        |> Install.ClauseInCase.makeRule
 --    , Install.Import.init "Frontend" "MagicLink.Auth" |> Install.Import.makeRule
 --    ]
-
-
-
 {-
 
 -}

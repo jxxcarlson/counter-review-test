@@ -2,7 +2,8 @@
     "type": "application",
     "source-directories": [
         "src",
-        "magic-link/elm-email"
+        "magic-link/elm-email",
+        "magic-link/magic-link"
     ],
     "elm-version": "0.19.1",
     "dependencies": {

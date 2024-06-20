@@ -74,7 +74,7 @@ configUsers =
      , Install.TypeVariant.makeRule "Types" "ToFrontend" "CheckSignInResponse (Result BackendDataStatus User.LoginData)"
 
     -- TYPES IMPORTS
-    , Install.Import.initSimple "Types" ["Session", "AssocList", "Auth.Common", "User", "Dict", "Http", "LocalUUID", "MagicLink.Types" ] |> Install.Import.makeRule
+    , Install.Import.initSimple "Types" ["EmailAddress", "Session", "AssocList", "Auth.Common", "User", "Dict", "Http", "LocalUUID", "MagicLink.Types" ] |> Install.Import.makeRule
     , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
 
     -- Type Frontend, User
@@ -138,20 +138,20 @@ configUsers =
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessions : Dict.Dict SessionId Auth.Common.UserInfo"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "secretCounter : Int"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionDict : AssocList.Dict SessionId String"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins: MagicLink.Types.PendingLogins"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins: AssocList.Dict SessionId { creationTime : Time.Posix , emailAddress : EmailAddress.EmailAddress , loginAttempts : Int , loginCode : Int }"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingAuth"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingEmailAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins : AssocList.Dict Lamdera.SessionId { loginAttempts : Int emailAddress : EmailAddress, creationTime : Time.Posix, loginCode : Int }"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "log : List ( Time.Posix, MagicLink.Types.LogItem )"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users: Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo :  Dict.Dict SessionId Session.Interaction"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo :  Dict.Dict Lamdera.SessionId Session.Interaction"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time: Time.Posix"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers: Maybe (List Int)"
 
     -- Backend import
-    , Install.Import.initSimple "Backend" [ "Auth.Flow","MagicLink.Types", "MagicLink.Backend","MagicLink.Auth", "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
+    , Install.Import.initSimple "Backend" [ "Session", "Auth.Common", "Auth.Flow","MagicLink.Types", "MagicLink.Backend","MagicLink.Auth", "Dict", "Helper", "LocalUUID", "Task", "Time", "User", "AssocList" ] |> Install.Import.makeRule
     , Install.Import.init "Backend" [ { moduleToImport = "Lamdera", alias_ = Nothing, exposedValues = Just [ "ClientId", "SessionId" ] } ] |> Install.Import.makeRule
 
 
@@ -176,6 +176,8 @@ configUsers =
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUser : Maybe User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signInState : SignInState"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "realname : String"
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "counter : Int"
+
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "username : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "email : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signinForm : MagicLink.Types.SigninForm"
@@ -193,8 +195,30 @@ configUsers =
     --
     , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServicePageRoute"  "Pages.Parts.generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule
     , Install.Import.initSimple "View.Main" ["Pages.TermsOfService"] |> Install.Import.makeRule
+
     --
+    , Install.Function.init "Backend" "init" initBackend |> Install.Function.makeRule
     ]
+
+initBackend = """init : ( BackendModel, Cmd BackendMsg )
+init =
+     ( { counter = 0
+       , log = []
+       , sessions = Dict.empty
+       , sessionInfo = Dict.empty
+       , sessionDict = AssocList.empty
+       , secretCounter = 0
+       , users = Dict.empty
+       , pendingLogins = AssocList.empty
+       , time = Time.millisToPosix 0
+       , pendingEmailAuths = Dict.empty
+       , randomAtmosphericNumbers = Nothing
+       , pendingAuths = Dict.empty
+       , localUuidData = Nothing
+       , userNameToEmailString = Dict.empty
+       }
+     , Cmd.none
+     )"""
 
 encodeRoutes_ = """encode : Route -> String
 encode route =
@@ -231,6 +255,7 @@ tryLoading loadingModel =
                         , now = loadingModel.now
                         , window = window
                         , showTooltip = False
+                        , counter = 0
 
                         -- MAGICLINK
                         , authFlow = Auth.Common.Idle
@@ -253,7 +278,6 @@ tryLoading loadingModel =
                         , signInState = SignedOut
                         --
                         , route = loadingModel.route
-                        , backendModel = Nothing
                         , message = "Starting up ..."
                         }
                     , Cmd.none
@@ -261,6 +285,7 @@ tryLoading loadingModel =
         )
         loadingModel.window
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
+
 """
 
 

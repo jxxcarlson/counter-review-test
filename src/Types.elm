@@ -52,10 +52,6 @@ type FrontendMsg
     | NoOp
 
 
-
---| AuthFrontendMsg MagicLink.Types.FrontendMsg
-
-
 type ToBackend
     = CounterIncremented
     | CounterDecremented

@@ -35,7 +35,7 @@ app =
 subscriptions : FrontendModel -> Sub FrontendMsg
 subscriptions _ =
     Sub.batch
-        [ Browser.Events.onResize GotWindowSize
+        [ Browser.Events.onResize “GotWindowSize
         , Browser.Events.onMouseUp (Json.Decode.succeed MouseDown)
         , Time.every 1000 Tick
         ]

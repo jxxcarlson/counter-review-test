@@ -121,6 +121,15 @@ configUsers =
     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "counter" "AssocList.empty"
 
+    , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
+    , Install.Initializer.makeRule "Backend" "init" "pendingEmailAuths" "Dict.empty"
+    , Install.Initializer.makeRule "Backend" "init" "pendingLogins" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "secretCounter" "0"
+    , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "sessions" "AssocList.empty"
+    , Install.Initializer.makeRule "Backend" "init" "log" "[]"
+
     -- Type BackendModel
 
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessions : Dict.Dict SessionId Auth.Common.UserInfo"
@@ -151,6 +160,9 @@ configUsers =
 
     -- Type BackendMsg
     , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
+     , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
+        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.LoginData"
+        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
 
     -- ToBackend
     , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
@@ -163,10 +175,22 @@ configUsers =
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "realname : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "username : String"
     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "email : String"
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signinForm : MagicLink.Types.SigninForm"
+    --
+     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "authFlow : Auth.Common.Flow"
+        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "authRedirectBaseUrl : Url"
+                , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "loginErrorMessage : Maybe String"
+        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signInStatus : MagicLink.Types.SignInStatus"
+        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUserData : Maybe User.LoginData"
 
     --
     , Install.Function.init "Frontend" "tryLoading" tryLoading |> Install.Function.makeRule
     , Install.Function.init "Route" "encode" encodeRoutes_ |> Install.Function.makeRule
+
+    --
+    , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServicePageRoute"  "Pages.Parts.generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule
+    , Install.Import.initSimple "View.Main" ["Pages.TermsOfService"] |> Install.Import.makeRule
+    --
     ]
 
 encodeRoutes_ = """encode : Route -> String
@@ -257,13 +281,7 @@ tryLoading loadingModel =
 --    , Install.Import.init "Types" "LocalUUID" |> Install.Import.makeRule
 --
 --    -- Type Frontend, MagicLink
---    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "authFlow : Auth.Common.Flow"
---    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "authRedirectBaseUrl : Url"
---    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signinForm : MagicLink.Types.SigninForm"
---    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "loginErrorMessage : Maybe String"
---    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signInStatus : MagicLink.Types.SignInStatus"
---    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUserData : Maybe User.LoginData"
---
+
 --    -- Type Frontend, User
 --    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "currentUser : Maybe User.User"
 --    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "signInState : SignInState"
@@ -314,9 +332,7 @@ tryLoading loadingModel =
 --    , Install.Import.init "Backend" "User" |> Install.Import.makeRule
 --
 --    -- Type BackendMsg
---    , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
---    , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.LoginData"
---    , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
+
 --
 --    --
 --    , Install.ClauseInCase.init

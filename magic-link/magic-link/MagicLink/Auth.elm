@@ -22,6 +22,7 @@ import Url
 import User
 
 
+updateFrontend : MagicLink.Types.FrontendMsg -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 updateFrontend msg model =
     case msg of
         MagicLink.Types.SubmitEmailForSignIn ->

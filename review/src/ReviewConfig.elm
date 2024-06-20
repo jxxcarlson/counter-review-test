@@ -129,7 +129,14 @@ configUsers =
     , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "AssocList.empty"
     , Install.Initializer.makeRule "Backend" "init" "sessions" "AssocList.empty"
     , Install.Initializer.makeRule "Backend" "init" "log" "[]"
+ --
+     , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Helper.handleAtmosphericNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
 
+     --GotAtmosphericRandomNumbers _
+     --    AutoLogin _ _
+     --    AuthBackendMsg _
     -- Type BackendModel
 
 --, sessionInfo : Session.SessionInfo

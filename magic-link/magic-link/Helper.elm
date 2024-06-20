@@ -1,5 +1,6 @@
 module Helper exposing
     ( getAtmosphericRandomNumbers
+    , handleAtmosphericNumbers
     , testUserDictionary
     , trigger
     )
@@ -12,13 +13,6 @@ import Task
 import Time
 import Types
 import User
-
-
-
--- MAGICLINK
--- TODO: this is a hack based on a lack of understanding of what is going on.
--- in Martin's code.
--- OTHER
 
 
 trigger : msg -> Cmd msg
@@ -64,3 +58,44 @@ getAtmosphericRandomNumbers =
         { url = LocalUUID.randomNumberUrl 4 9
         , expect = Http.expectString Types.GotAtmosphericRandomNumbers
         }
+
+
+handleAtmosphericNumbers : Types.BackendModel -> Result error String -> ( Types.BackendModel, Cmd Types.BackendMsg )
+handleAtmosphericNumbers model tryRandomAtmosphericNumbers =
+    let
+        ( numbers, data_ ) =
+            case tryRandomAtmosphericNumbers of
+                Err _ ->
+                    ( model.randomAtmosphericNumbers, model.localUuidData )
+
+                Ok rns ->
+                    let
+                        parts =
+                            rns
+                                |> String.split "\t"
+                                |> List.map String.trim
+                                |> List.filterMap String.toInt
+
+                        data =
+                            LocalUUID.initFrom4List parts
+                    in
+                    ( Just parts, data )
+    in
+    ( { model
+        | randomAtmosphericNumbers = numbers
+        , localUuidData = data_
+        , users =
+            if Dict.isEmpty model.users then
+                testUserDictionary
+
+            else
+                model.users
+        , userNameToEmailString =
+            if Dict.isEmpty model.userNameToEmailString then
+                Dict.fromList [ ( "jxxcarlson", "jxxcarlson@gmail.com" ), ( "aristotle", "jxxcarlson@mac.com" ) ]
+
+            else
+                model.userNameToEmailString
+      }
+    , Cmd.none
+    )

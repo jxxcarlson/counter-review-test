@@ -224,7 +224,7 @@ enterEmailView model =
             [ Element.text "By continuing, you agree to our Terms of Service."
 
             -- TODO: below, Route,HomepageRoute is a placeholder
-            , MyElement.routeLinkNewTab Route.HomepageRoute Route.TermsOfServicePageRoute
+            , MyElement.routeLinkNewTab Route.HomepageRoute Route.TermsOfServiceRoute
             , Element.text "."
             ]
         , Element.row

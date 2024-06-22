@@ -109,7 +109,9 @@ configUsers =
 
 
     -- Route
-    , Install.TypeVariant.makeRule "Route" "Route" "TermsOfServicePageRoute"
+    , Install.TypeVariant.makeRule "Route" "Route" "TermsOfServiceRoute"
+    , Install.TypeVariant.makeRule "Route" "Route" "SignInRoute"
+
     -- Frontend, install
     , Install.Import.initSimple "Frontend" [ "Auth.Common", "MagicLink.Types", "MagicLink.LoginForm" ] |> Install.Import.makeRule
 
@@ -200,8 +202,10 @@ configUsers =
     , Install.Function.init "Route" "encode" encodeRoutes_ |> Install.Function.makeRule
 
     --
-    , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServicePageRoute"  "Pages.Parts.generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule
+    , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute"  "Pages.Parts.generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule
+    , Install.ClauseInCase.init "View.Main" "loadedView" "SigninRoute"  "Pages.Parts.generic model Pages.Signin.view" |> Install.ClauseInCase.makeRule
     , Install.Import.initSimple "View.Main" ["Pages.TermsOfService"] |> Install.Import.makeRule
+    , Install.Import.initSimple "View.Main" ["Pages.Signin"] |> Install.Import.makeRule
 
     --
     , Install.Function.init "Backend" "init" initBackend |> Install.Function.makeRule
@@ -230,26 +234,34 @@ init =
 encodeRoutes_ = """encode : Route -> String
 encode route =
     Url.Builder.absolute
-        (case route of
-            HomepageRoute ->
-                []
+       (case route of
+           HomepageRoute ->
+               []
 
-            TermsOfServicePageRoute ->
-                [ "tos" ]
+           CounterPageRoute ->
+              ["counter"]
 
-            CounterPageRoute ->
-                [ "counter" ]
-        )
-        (case route of
-            HomepageRoute ->
-                []
+           TermsOfServiceRoute ->
+               [ "terms" ]
 
-            TermsOfServicePageRoute ->
-                []
+           SignInRoute ->
+               [ "signin" ]
 
-            CounterPageRoute ->
-                []
-        )"""
+       )
+       (case route of
+           HomepageRoute ->
+               []
+
+           CounterPageRoute ->
+                         []
+
+           TermsOfServiceRoute ->
+               []
+
+           SignInRoute ->
+               []
+       )
+"""
 tryLoading =
     """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =

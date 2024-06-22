@@ -1,25 +1,52 @@
 module MagicLink.Types exposing
     ( EnterEmail_
     , EnterLoginCode_
-    , FrontendMsg(..)
     , Log
     , LogItem(..)
     , LoginCodeStatus(..)
+    , Model
+    , Msg(..)
     , PendingLogins
+    , SignInState(..)
     , SignInStatus(..)
-    , SigninForm(..)
+    , SigninFormState(..)
     )
 
-import AssocList exposing (Dict)
+import AssocList
 import Auth.Common
 import Dict exposing (Dict)
 import EmailAddress exposing (EmailAddress)
 import Lamdera
+import Route
 import Time
+import Url
 import User
 
 
-type FrontendMsg
+type alias Model =
+    { count : Int
+    , signInStatus : SignInStatus
+    , currentUser : Maybe User.User
+    , currentUserData : Maybe User.SignInData
+    , signInForm : SigninFormState
+    , signInState : SignInState
+    , loginErrorMessage : Maybe String
+    , realname : String
+    , username : String
+    , email : String
+    , message : String
+    , authFlow : Auth.Common.Flow
+    , authRedirectBaseUrl : Url.Url
+    }
+
+
+type SignInState
+    = SisSignedOut
+    | SisSignUp
+    | SisSignedIn
+
+
+type Msg
     = SubmitEmailForSignIn
     | AuthSigninRequested { methodId : Auth.Common.MethodId, email : Maybe String }
     | ReceivedSigninCode String
@@ -32,9 +59,10 @@ type FrontendMsg
     | InputRealname String
     | InputUsername String
     | InputEmail String
+    | SetRoute Route.Route
 
 
-type SigninForm
+type SigninFormState
     = EnterEmail EnterEmail_
     | EnterSigninCode EnterLoginCode_
 

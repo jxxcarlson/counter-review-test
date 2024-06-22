@@ -1,9 +1,6 @@
 module View.Button exposing
-    ( cancelSignUp
-    , openSignUp
+    ( openSignUp
     , setAdminDisplay
-    , signOut
-    , signUp
     )
 
 import Element
@@ -18,24 +15,16 @@ import View.Color
 
 
 -- USER
-
-
-signUp : Element.Element Types.FrontendMsg
-signUp =
-    button (Types.AuthFrontendMsg MagicLink.Types.SubmitSignUp) "Submit"
-
-
-signOut : String -> Element.Element Types.FrontendMsg
-signOut str =
-    button (Types.AuthFrontendMsg MagicLink.Types.SignOut) ("Sign out " ++ str)
-
-
-cancelSignUp =
-    button (Types.AuthFrontendMsg MagicLink.Types.CancelSignUp) "Cancel"
+--openSignUp : Element.Element Types.FrontendMsg
 
 
 openSignUp =
-    button (Types.AuthFrontendMsg MagicLink.Types.OpenSignUp) "Sign up"
+    button MagicLink.Types.OpenSignUp "Sign up"
+
+
+setAdminDisplay : Types.AdminDisplay -> Types.AdminDisplay -> String -> Element.Element Types.FrontendMsg
+setAdminDisplay currentDisplay newDisplay label =
+    highlightableButton (currentDisplay == newDisplay) (Types.SetAdminDisplay newDisplay) label
 
 
 highlight condition =
@@ -47,7 +36,6 @@ highlight condition =
 
 
 
--- EXAMPLES
 -- BUTTON FUNCTION
 
 

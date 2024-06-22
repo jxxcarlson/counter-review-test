@@ -1,7 +1,7 @@
 module MagicLink.Auth exposing
     ( backendConfig
+    , update
     , updateFromBackend
-    , updateFrontend
     )
 
 import Auth.Common exposing (UserInfo)
@@ -14,16 +14,17 @@ import Lamdera exposing (ClientId, SessionId)
 import MagicLink.Backend
 import MagicLink.Common
 import MagicLink.Frontend
+import MagicLink.Helper as Helper
 import MagicLink.Types
 import Route
 import Time
-import Types exposing (..)
+import Types exposing (BackendModel, BackendMsg(..), FrontendMsg(..), ToBackend(..), ToFrontend(..))
 import Url
 import User
 
 
-updateFrontend : MagicLink.Types.FrontendMsg -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
-updateFrontend msg model =
+update : MagicLink.Types.Msg -> MagicLink.Types.Model -> ( MagicLink.Types.Model, Cmd FrontendMsg )
+update msg model =
     case msg of
         MagicLink.Types.SubmitEmailForSignIn ->
             MagicLink.Frontend.submitEmailForSignin model
@@ -36,7 +37,13 @@ updateFrontend msg model =
             MagicLink.Frontend.signInWithCode model loginCode
 
         MagicLink.Types.CancelSignIn ->
-            ( { model | route = Route.HomepageRoute }, Cmd.none )
+            let
+                _ =
+                    Debug.log "CANCEL SIGN IN (1)" True
+            in
+            --( model, Helper.trigger <| AuthFrontendMsg <| MagicLink.Types.SetRoute Route.HomepageRoute )
+            -- ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Helper.trigger <| AuthFrontendMsg <| MagicLink.Types.SetRoute Route.HomepageRoute )
+            ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Helper.trigger (Types.SetRoute_ Route.HomepageRoute) )
 
         MagicLink.Types.CancelSignUp ->
             ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
@@ -62,27 +69,14 @@ updateFrontend msg model =
         MagicLink.Types.InputEmail str ->
             ( { model | email = str }, Cmd.none )
 
+        MagicLink.Types.SetRoute route ->
+            ( model, Helper.trigger <| AuthFrontendMsg <| MagicLink.Types.SetRoute route )
+
 
 updateFromBackend :
     Auth.Common.ToFrontend
-    ->
-        { a
-            | authFlow : Auth.Common.Flow
-            , message : String
-            , currentUserData : Maybe User.LoginData
-            , signInState : SignInState
-            , route : Route.Route
-        }
-    ->
-        ( { a
-            | authFlow : Auth.Common.Flow
-            , message : String
-            , currentUserData : Maybe User.LoginData
-            , signInState : SignInState
-            , route : Route.Route
-          }
-        , Cmd msg
-        )
+    -> MagicLink.Types.Model
+    -> ( MagicLink.Types.Model, Cmd FrontendMsg )
 updateFromBackend authToFrontendMsg model =
     case authToFrontendMsg of
         Auth.Common.ReceivedMessage result ->
@@ -105,7 +99,7 @@ updateFromBackend authToFrontendMsg model =
         Auth.Common.AuthSignInWithTokenResponse result ->
             case result of
                 Ok userData ->
-                    ( { model
+                    { model
                         | currentUserData = Just userData
                         , authFlow =
                             Auth.Common.Done
@@ -113,17 +107,17 @@ updateFromBackend authToFrontendMsg model =
                                 , name = Just userData.name
                                 , username = Just userData.username
                                 }
-                        , signInState = SignedIn
-                      }
+
+                        -- TODO, disable as test:, signInStatus = MagicLink.Types.SignedIn
+                    }
                         |> MagicLink.Frontend.signInWithTokenResponseM userData
-                    , MagicLink.Frontend.signInWithTokenResponseC userData
-                    )
+                        |> (\( m, c ) -> ( m, Cmd.batch [ c, MagicLink.Frontend.signInWithTokenResponseC userData ] ))
 
                 Err _ ->
                     ( model, Cmd.none )
 
 
-config : Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend LoadedModel BackendModel
+config : Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend MagicLink.Types.Model BackendModel
 config =
     { toBackend = AuthToBackend
     , toFrontend = AuthToFrontend
@@ -230,7 +224,7 @@ findOrRegisterUser params model =
     ( model, Cmd.none )
 
 
-backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend LoadedModel BackendModel
+backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend MagicLink.Types.Model BackendModel
 backendConfig model =
     { asToFrontend = AuthToFrontend
     , asBackendMsg = AuthBackendMsg

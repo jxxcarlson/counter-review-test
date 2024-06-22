@@ -2,12 +2,10 @@ module Types exposing (..)
 
 import Browser
 import Browser.Navigation exposing (Key)
-import Http
 import Lamdera exposing (ClientId, SessionId)
 import Route exposing (Route)
 import Time
 import Url exposing (Url)
-import User
 
 
 type alias BackendModel =

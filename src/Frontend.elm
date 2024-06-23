@@ -146,20 +146,6 @@ scrollToTop =
     Browser.Dom.setViewport 0 0 |> Task.perform (\() -> SetViewport)
 
 
-
---update2 : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
---update2 msg model =
---    case msg of
---        Increment ->
---            ( { model | counter = model.counter + 1 }, sendToBackend CounterIncremented )
---
---        Decrement ->
---            ( { model | counter = model.counter - 1 }, sendToBackend CounterDecremented )
---
---        NoOp ->
---            ( model, Cmd.none )
-
-
 updateFromBackend : ToFrontend -> FrontendModel -> ( FrontendModel, Cmd FrontendMsg )
 updateFromBackend msg model =
     case model of

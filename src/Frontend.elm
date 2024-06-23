@@ -82,20 +82,21 @@ tryLoading loadingModel =
         (\window ->
             case loadingModel.route of
                 _ ->
-                    ( Loaded
-                        { key = loadingModel.key
-                        , now = loadingModel.now
-                        , window = window
-                        , showTooltip = False
-                        , route = loadingModel.route
-                        , message = "Starting up ..."
-                        , counter = 0
-                        }
-                    , Cmd.none
-                    )
+                    ( Loaded <| initLoaded loadingModel window, Cmd.none )
         )
         loadingModel.window
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
+
+
+initLoaded loadingModel window =
+    { key = loadingModel.key
+    , now = loadingModel.now
+    , window = window
+    , showTooltip = False
+    , route = loadingModel.route
+    , message = "Starting up ..."
+    , counter = 0
+    }
 
 
 updateLoaded : FrontendMsg -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )

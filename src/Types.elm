@@ -65,23 +65,10 @@ type ToBackend
 type BackendMsg
     = ClientConnected SessionId ClientId
     | Noop
-    | GotAtmosphericRandomNumbers (Result Http.Error String)
-    | AuthBackendMsg Auth.Common.BackendMsg
-    | AutoLogin SessionId User.SignInData
 
 
 type ToFrontend
     = CounterNewValue Int String
-    | OnConnected SessionId ClientId
-    | CheckSignInResponse (Result BackendDataStatus User.SignInData)
-    | UserRegistered User.User
-    | UserSignedIn (Maybe User.User)
-    | SignInError String
-    | AuthToFrontend Auth.Common.ToFrontend
-    | RegistrationError String
-    | AuthSuccess Auth.Common.UserInfo
-    | GetLoginTokenRateLimited
-    | UserInfoMsg (Maybe Auth.Common.UserInfo)
 
 
 type BackendDataStatus

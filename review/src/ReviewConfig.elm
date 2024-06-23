@@ -41,12 +41,16 @@ configMagic =
          , Install.Type.makeRule "Types" "AdminDisplay" ["ADUser", "ADSession", "ADKeyValues"]
 
        -- TO FRONTEND
-       , Install.TypeVariant.makeRule "Types" "ToFrontend"    "OnConnected SessionId ClientId"
+       , Install.TypeVariant.makeRule "Types" "ToFrontend" "OnConnected SessionId ClientId"
+
+       -- FRONTEND MSG
+       , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SignInUser User.SignInData"
+       , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.Msg"
 
        -- BACKEND MSG
-       , Install.TypeVariant.makeRule "Types" "BackendMsg"    "GotAtmosphericRandomNumbers (Result Http.Error String)"
-       , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AuthBackendMsg Auth.Common.BackendMsg"
-       , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AutoLogin SessionId User.SignInData"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.SignInData"
 
        -- BackendModel
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"

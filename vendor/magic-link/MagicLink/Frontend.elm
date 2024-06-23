@@ -2,6 +2,7 @@ module MagicLink.Frontend exposing
     ( enterEmail
     , handleRegistrationError
     , handleSignInError
+    , signIn
     , signInWithCode
     , signInWithTokenResponseC
     , signInWithTokenResponseM
@@ -95,6 +96,18 @@ signInWithTokenResponseC signInData =
 
     else
         Cmd.none
+
+
+signIn model userData =
+    let
+        oldMagicLinkModel =
+            model.magicLinkModel
+    in
+    ( { model
+        | magicLinkModel = { oldMagicLinkModel | currentUserData = Just userData, signInStatus = MagicLink.Types.SignedIn }
+      }
+    , Cmd.none
+    )
 
 
 signOut : Model -> ( Model, Cmd frontendMsg )

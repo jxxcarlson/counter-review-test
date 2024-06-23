@@ -37,10 +37,13 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "BackendMsg"    "GotAtmosphericRandomNumbers (Result Http.Error String)"
        , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AuthBackendMsg Auth.Common.BackendMsg"
        , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AutoLogin SessionId User.SignInData"
+       , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
+
        -- BACKEND
      , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
      , Install.Import.initSimple "Backend" ["AssocList", "Auth.Common", "Auth.Flow",
        "MagicLink.Auth", "MagicLink.Backend", "Reconnect", "User"] |> Install.Import.makeRule
+
        -- TO FRONTEND
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthToFrontend Auth.Common.ToFrontend"
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthSuccess Auth.Common.UserInfo"

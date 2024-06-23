@@ -8,6 +8,7 @@ import Pages.Counter
 import Pages.Home
 import Route exposing (Route(..))
 import Types exposing (FrontendModel(..), FrontendMsg, LoadedModel)
+import User
 import View.Color
 
 

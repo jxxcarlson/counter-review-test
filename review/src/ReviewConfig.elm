@@ -71,6 +71,9 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "magicLinkModel : MagicLink.Types.Model"
 
+       , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Dict.empty"
+       , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Pages.SignIn.init authRedirectBaseUrl"
+
 
        -- BackendModel
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
@@ -147,6 +150,7 @@ configMagic =
 --        , Helper.getAtmosphericRandomNumbers
 --        ]
 --    )
+
 
        -- To Frontend
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthToFrontend Auth.Common.ToFrontend"

@@ -63,8 +63,58 @@ configMagic =
      , Install.TypeVariant.makeRule "Route" "Route" "Notes"
      , Install.TypeVariant.makeRule "Route" "Route" "SignInRoute"
      , Install.TypeVariant.makeRule "Route" "Route" "AdminRoute"
+     , Install.Function.ReplaceFunction.init "Route" "decode" decode |> Install.Function.ReplaceFunction.makeRule
+     , Install.Function.ReplaceFunction.init "Route" "encode" encode |> Install.Function.ReplaceFunction.makeRule
 
     ]
+
+encode = """encode : Route -> String
+encode route =
+    Url.Builder.absolute
+        (case route of
+            HomepageRoute ->
+                []
+
+            TermsOfServiceRoute ->
+                [ "terms" ]
+
+            Notes ->
+                [ "notes" ]
+
+            SignInRoute ->
+                [ "signin" ]
+
+            AdminRoute ->
+                [ "admin" ]
+        )
+        (case route of
+            HomepageRoute ->
+                []
+
+            TermsOfServiceRoute ->
+                []
+
+            Notes ->
+                []
+
+            SignInRoute ->
+                []
+
+            AdminRoute ->
+                []
+        )
+"""
+decode = """decode : Url -> Route
+decode url =
+    Url.Parser.oneOf
+        [ Url.Parser.top |> Url.Parser.map HomepageRoute
+        , Url.Parser.s "counter" |> Url.Parser.map CounterPageRoute
+        , Url.Parser.s "admin" |> Url.Parser.map AdminRoute
+        , Url.Parser.s "notes" |> Url.Parser.map Notes
+        , Url.Parser.s "signin" |> Url.Parser.map SignInRoute
+        ]
+        |> (\\a -> Url.Parser.parse a url |> Maybe.withDefault HomepageRoute)
+"""
 
 configReset : List Rule
 configReset =

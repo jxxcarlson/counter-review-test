@@ -5,7 +5,7 @@ import Dict
 import Element exposing (Element, column, fill, height, px, spacing, text, width)
 import Element.Font
 import EmailAddress
-import Types exposing (AdminDisplay(..), BackendModel, FrontendMsg, LoadedModel)
+import Types exposing (BackendModel, FrontendMsg, LoadedModel)
 import User
 import View.Button
 import View.Geometry

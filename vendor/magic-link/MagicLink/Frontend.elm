@@ -9,6 +9,7 @@ module MagicLink.Frontend exposing
     , signOut
     , submitEmailForSignin
     , submitSignUp
+    , updateMagicLinkModelInModel
     , userRegistered
     )
 
@@ -22,8 +23,7 @@ import MagicLink.Types exposing (SigninFormState(..))
 import Route exposing (Route(..))
 import Types
     exposing
-        ( AdminDisplay(..)
-        , FrontendMsg(..)
+        ( FrontendMsg(..)
         , LoadedModel
         , ToBackend(..)
         )
@@ -32,6 +32,10 @@ import User
 
 type alias Model =
     MagicLink.Types.Model
+
+
+updateMagicLinkModelInModel model =
+    \magicLinkModel -> { model | magicLinkModel = magicLinkModel }
 
 
 submitEmailForSignin : Model -> ( Model, Cmd FrontendMsg )

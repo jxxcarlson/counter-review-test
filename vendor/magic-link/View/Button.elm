@@ -1,7 +1,4 @@
-module View.Button exposing
-    ( openSignUp
-    , setAdminDisplay
-    )
+module View.Button exposing (openSignUp)
 
 import Element
 import Element.Background
@@ -20,11 +17,6 @@ import View.Color
 
 openSignUp =
     button MagicLink.Types.OpenSignUp "Sign up"
-
-
-setAdminDisplay : Types.AdminDisplay -> Types.AdminDisplay -> String -> Element.Element Types.FrontendMsg
-setAdminDisplay currentDisplay newDisplay label =
-    highlightableButton (currentDisplay == newDisplay) (Types.SetAdminDisplay newDisplay) label
 
 
 highlight condition =

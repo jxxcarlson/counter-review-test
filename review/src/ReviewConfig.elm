@@ -37,6 +37,9 @@ configMagic =
          Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User", "Http"] |> Install.Import.makeRule
        , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
 
+       -- NEW TYPES
+         , Install.Type.makeRule "Types" "AdminDisplay" ["ADUser", "ADSession", "ADKeyValues"]
+
        -- TO FRONTEND
        , Install.TypeVariant.makeRule "Types" "ToFrontend"    "OnConnected SessionId ClientId"
 
@@ -44,7 +47,8 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "BackendMsg"    "GotAtmosphericRandomNumbers (Result Http.Error String)"
        , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AuthBackendMsg Auth.Common.BackendMsg"
        , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AutoLogin SessionId User.SignInData"
-       -- BACKEND
+
+       -- BackendModel
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time : Time.Posix"
@@ -62,10 +66,20 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
 
-       -- BACKEND
+      --  ToBackend
+        , Install.TypeVariant.makeRule "Types" "ToBackend" "AutoLogin SessionId AuthToBackend Auth.Common.ToBackend"
+        , Install.TypeVariant.makeRule "Types" "ToBackend" "AdminInspect (Maybe User.User)"
+        , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
+        , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String "
+        , Install.TypeVariant.makeRule "Types" "ToBackend" "AutoLogin SessionId AuthToBackend Auth.Common.ToBackend"
+
+       -- Import
      , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
      , Install.Import.initSimple "Backend" ["AssocList", "Auth.Common", "Auth.Flow",
        "MagicLink.Auth", "MagicLink.Backend", "Reconnect", "User"] |> Install.Import.makeRule
+
+      -- Init
+
 
        -- TO FRONTEND
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthToFrontend Auth.Common.ToFrontend"

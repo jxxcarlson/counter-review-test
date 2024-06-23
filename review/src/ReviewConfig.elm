@@ -151,7 +151,12 @@ configMagic =
 --        , Helper.getAtmosphericRandomNumbers
 --        ]
 --    )
-
+       -- UpdateLoaded
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "LiftMsg _" "( model, Cmd.none )" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "SetAdminDisplay adminDisplay" "( { model | adminDisplay = adminDisplay }, Cmd.none )" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "SetRoute_ route" "( { model | route = route }, Cmd.none )" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst updateMagicLinkModelInModel" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "SignInUser userData" "MagicLink.Frontend.signIn model userData" |> Install.ClauseInCase.makeRule
 
        -- To Frontend
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthToFrontend Auth.Common.ToFrontend"

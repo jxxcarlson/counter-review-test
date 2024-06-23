@@ -76,31 +76,19 @@ update msg model =
             updateLoaded msg loaded |> Tuple.mapFirst Loaded
 
 
-tryLoading1 : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
-tryLoading1 loadingModel =
-    Maybe.map
-        (\window ->
-            case loadingModel.route of
-                _ ->
-                    ( Loaded <| initLoaded loadingModel window, Cmd.none )
-        )
-        loadingModel.window
-        |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
-
-
 tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =
     Maybe.map
         (\window ->
             case loadingModel.route of
                 _ ->
-                    initLoaded2 loadingModel window
+                    initLoaded loadingModel window
         )
         loadingModel.window
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
 
 
-initLoaded2 loadingModel window =
+initLoaded loadingModel window =
     ( Loaded <|
         { key = loadingModel.key
         , now = loadingModel.now
@@ -112,17 +100,6 @@ initLoaded2 loadingModel window =
         }
     , Cmd.none
     )
-
-
-initLoaded loadingModel window =
-    { key = loadingModel.key
-    , now = loadingModel.now
-    , window = window
-    , showTooltip = False
-    , route = loadingModel.route
-    , message = "Starting up ..."
-    , counter = 0
-    }
 
 
 updateLoaded : FrontendMsg -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )

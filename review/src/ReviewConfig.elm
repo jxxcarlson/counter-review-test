@@ -48,6 +48,7 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.Msg"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetRoute_ Route"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetAdminDisplay AdminDisplay"
+       , Install.TypeVariant.makeRule "Types" "FrontendMsg" "LiftMsg MagicLink.Types.Msg"
 
        -- Backend Import
        , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
@@ -68,6 +69,7 @@ configMagic =
 
        -- Loaded Model
        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+       , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "magicLinkModel : MagicLink.Types.Model"
 
 
        -- BackendModel
@@ -159,7 +161,7 @@ configMagic =
 
 -- ROUTE
      , Install.TypeVariant.makeRule "Route" "Route" "TermsOfServiceRoute"
-     , Install.TypeVariant.makeRule "Route" "Route" "Notes"
+     --, Install.TypeVariant.makeRule "Route" "Route" "Notes"
      , Install.TypeVariant.makeRule "Route" "Route" "SignInRoute"
      , Install.TypeVariant.makeRule "Route" "Route" "AdminRoute"
      , Install.Function.ReplaceFunction.init "Route" "decode" decode |> Install.Function.ReplaceFunction.makeRule
@@ -205,9 +207,6 @@ encode route =
             TermsOfServiceRoute ->
                 [ "terms" ]
 
-            Notes ->
-                [ "notes" ]
-
             SignInRoute ->
                 [ "signin" ]
 
@@ -222,9 +221,6 @@ encode route =
                 []
 
             TermsOfServiceRoute ->
-                []
-
-            Notes ->
                 []
 
             SignInRoute ->

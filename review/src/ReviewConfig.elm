@@ -127,13 +127,12 @@ configMagic =
     -- VIEW.MAIN
 
      , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "View.Main" "loadedView" "Notes" "generic model Pages.Notes.view" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "View.Main" "loadedView" "AdminRoute" "generic model (if User.isAdmin model.magicLinkModel.currentUserData then generic model Pages.Admin.view else generic model Pages.Home.view" |> Install.ClauseInCase.makeRule
      , Install.Function.InsertFunction.init "View.Main" "generic" generic |> Install.Function.InsertFunction.makeRule
 
     --
-    , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
+    , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService"] |> Install.Import.makeRule
 
 --init : ( BackendModel, Cmd BackendMsg )
 --init =

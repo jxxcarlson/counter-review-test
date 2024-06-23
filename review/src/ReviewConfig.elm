@@ -37,8 +37,6 @@ configMagic =
          Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User", "Http"] |> Install.Import.makeRule
        , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
 
-       -- NEW TYPES
-         , Install.Type.makeRule "Types" "AdminDisplay" ["ADUser", "ADSession", "ADKeyValues"]
 
        -- TO FRONTEND
        , Install.TypeVariant.makeRule "Types" "ToFrontend" "OnConnected SessionId ClientId"
@@ -47,7 +45,6 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SignInUser User.SignInData"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.Msg"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetRoute_ Route"
-       , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetAdminDisplay AdminDisplay"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "LiftMsg MagicLink.Types.Msg"
 
        -- Backend Import
@@ -75,7 +72,7 @@ configMagic =
        , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
 
        -- Install Frontend
-       , Install.Import.initSimple "Frontend" ["Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
+       , Install.Import.initSimple "Frontend" ["MagicLink.Frontend", "MagicLink.Auth", "Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
        -- BackendModel
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
@@ -153,9 +150,8 @@ configMagic =
 --    )
        -- UpdateLoaded
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "LiftMsg _" "( model, Cmd.none )" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Frontend" "updateLoaded" "SetAdminDisplay adminDisplay" "( { model | adminDisplay = adminDisplay }, Cmd.none )" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "SetRoute_ route" "( { model | route = route }, Cmd.none )" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst updateMagicLinkModelInModel" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst MagicLink.Frontend.updateMagicLinkModelInModel" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "SignInUser userData" "MagicLink.Frontend.signIn model userData" |> Install.ClauseInCase.makeRule
 
        -- To Frontend

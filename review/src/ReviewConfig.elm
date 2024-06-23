@@ -171,7 +171,19 @@ configMagic =
 
     ]
 
-adminRoute = """if User.isAdmin model.magicLinkModel.currentUserData then
+adminRoute0 = "foo"
+
+adminRouteA = """
+    if User.isAdmin model.magicLinkModel.currentUserData then
+        generic model Pages.Admin.view
+
+    else
+        generic model Pages.Home.view
+"""
+
+adminRoute = "if User.isAdmin model.magicLinkModel.currentUserData then generic model Pages.Admin.view else generic model Pages.Home.view"
+
+adminRoute1 = """if User.isAdmin model.magicLinkModel.currentUserData then
         generic model Pages.Admin.view
     else
         generic model Pages.Home.view

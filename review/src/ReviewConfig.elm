@@ -59,12 +59,12 @@ configMagic =
        , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
-       , Install.ClauseInCase.init "Backend" "update" "OnConnected sessionId clientId" "Reconnect.connect model sessionId clientId" |> Install.ClauseInCase.makeRule
 
        -- BACKEND MSG
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.SignInData"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
 
        -- BackendModel
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
@@ -93,7 +93,7 @@ configMagic =
 
        -- Import
      , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
-     , Install.Import.initSimple "Backend" ["AssocList", "Auth.Common", "Auth.Flow",
+     , Install.Import.initSimple "Backend" ["Atmospheric", "AssocList", "Auth.Common", "Auth.Flow",
        "MagicLink.Auth", "MagicLink.Backend", "Reconnect", "User"] |> Install.Import.makeRule
 
       -- Init

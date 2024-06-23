@@ -124,7 +124,16 @@ configMagic =
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AdminInspect maybeUser" "( model, Lamdera.sendToFrontend clientId (AdminInspectResponse model) )" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "GetBackendModel" "( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )" |> Install.ClauseInCase.makeRule
 
+    -- VIEW.MAIN
 
+     , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "View.Main" "loadedView" "Notes" "generic model Pages.Notes.view" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "View.Main" "loadedView" "AdminRoute" "generic model (if User.isAdmin model.magicLinkModel.currentUserData then generic model Pages.Admin.view else generic model Pages.Home.view" |> Install.ClauseInCase.makeRule
+     , Install.Function.InsertFunction.init "View.Main" "generic" generic |> Install.Function.InsertFunction.makeRule
+
+    --
+    , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
 
 --init : ( BackendModel, Cmd BackendMsg )
 --init =
@@ -158,6 +167,31 @@ configMagic =
      , Install.Function.ReplaceFunction.init "Route" "encode" encode |> Install.Function.ReplaceFunction.makeRule
 
     ]
+
+generic = """generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
+generic model view_ =
+    Element.column
+        [ Element.width Element.fill, Element.height Element.fill ]
+        [ Element.row [ Element.width (Element.px model.window.width), Element.Background.color View.Color.blue ]
+            [ ---
+              Pages.SignIn.headerView model.magicLinkModel
+                model.route
+                { window = model.window, isCompact = True }
+                |> Element.map Types.AuthFrontendMsg
+            , headerView model model.route { window = model.window, isCompact = True }
+            ]
+        , Element.column
+            (Element.padding 20
+                :: Element.scrollbarY
+                :: Element.height (Element.px <| model.window.height - 95)
+                :: Theme.contentAttributes
+            )
+            [ view_ model -- |> Element.map Types.AuthFrontendMsg
+            ]
+        , footer model.route model
+        ]
+"""
+
 
 encode = """encode : Route -> String
 encode route =

@@ -91,7 +91,7 @@ signInWithTokenResponseM signInData model =
 signInWithTokenResponseC : User.SignInData -> Cmd FrontendMsg
 signInWithTokenResponseC signInData =
     if List.member User.AdminRole signInData.roles then
-        Lamdera.sendToBackend GetBackendModel
+        Lamdera.sendToBackend GetUserDictionary
 
     else
         Cmd.none

@@ -71,8 +71,7 @@ configMagic =
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AdminInspect (Maybe User.User)"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String "
-        , Install.TypeVariant.makeRule "Types" "ToBackend" "AutoLogin SessionId AuthToBackend Auth.Common.ToBackend"
-
+      
        -- Import
      , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
      , Install.Import.initSimple "Backend" ["AssocList", "Auth.Common", "Auth.Flow",

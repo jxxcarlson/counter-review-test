@@ -75,6 +75,9 @@ encode route =
             HomepageRoute ->
                 []
 
+            CounterPageRoute ->
+                [ "counter" ]
+
             TermsOfServiceRoute ->
                 [ "terms" ]
 
@@ -89,6 +92,9 @@ encode route =
         )
         (case route of
             HomepageRoute ->
+                []
+
+            CounterPageRoute ->
                 []
 
             TermsOfServiceRoute ->

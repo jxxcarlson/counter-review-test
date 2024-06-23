@@ -67,7 +67,7 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
 
       --  ToBackend
-        , Install.TypeVariant.makeRule "Types" "ToBackend" "AutoLogin SessionId AuthToBackend Auth.Common.ToBackend"
+        , Install.TypeVariant.makeRule "Types" "ToBackend" "AutoLogin SessionId"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AdminInspect (Maybe User.User)"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String "

@@ -8,6 +8,10 @@ import Url.Parser
 type Route
     = HomepageRoute
     | CounterPageRoute
+    | TermsOfServiceRoute
+    | AdminRoute
+    | Notes
+    | SignInRoute
 
 
 decode : Url -> Route

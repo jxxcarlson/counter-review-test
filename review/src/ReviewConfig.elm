@@ -46,6 +46,8 @@ configMagic =
        -- FRONTEND MSG
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SignInUser User.SignInData"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "AuthFrontendMsg MagicLink.Types.Msg"
+       , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetRoute_ Route"
+       , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetAdminDisplay AdminDisplay"
 
        -- BACKEND MSG
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"

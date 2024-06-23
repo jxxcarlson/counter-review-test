@@ -27,10 +27,44 @@ import Review.Rule exposing (Rule)
 
 
 config =
-    configReset
+    configMagic
 
+configMagic : List Rule
+configMagic =
+    [ --TYPES
+         Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User", "Http"] |> Install.Import.makeRule
+       , Install.TypeVariant.makeRule "Types" "ToFrontend"    "OnConnected SessionId ClientId"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg"    "GotAtmosphericRandomNumbers (Result Http.Error String)"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AuthBackendMsg Auth.Common.BackendMsg"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg"    "AutoLogin SessionId User.SignInData"
+       -- BACKEND
+     , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
+     , Install.Import.initSimple "Backend" ["AssocList", "Auth.Common", "Auth.Flow",
+       "MagicLink.Auth", "MagicLink.Backend", "Reconnect", "User"] |> Install.Import.makeRule
+       -- TO FRONTEND
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthToFrontend Auth.Common.ToFrontend"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthSuccess Auth.Common.UserInfo"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserInfoMsg (Maybe Auth.Common.UserInfo)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "CheckSignInResponse (Result BackendDataStatus User.SignInData)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "GetLoginTokenRateLimited"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "RegistrationError String"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "SignInError String"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserSignedIn (Maybe User.User)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserRegistered User.User"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "CheckSignInResponse (Result BackendDataStatus User.SignInData)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "CheckSignInResponse (Result BackendDataStatus User.SignInData)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "CheckSignInResponse (Result BackendDataStatus User.SignInData)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "CheckSignInResponse (Result BackendDataStatus User.SignInData)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "CheckSignInResponse (Result BackendDataStatus User.SignInData)"
+     , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData", "Spell String Int"]
 
+-- ROUTE
+     , Install.TypeVariant.makeRule "Route" "Route" "TermsOfServiceRoute"
+     , Install.TypeVariant.makeRule "Route" "Route" "Notes"
+     , Install.TypeVariant.makeRule "Route" "Route" "SignInRoute"
+     , Install.TypeVariant.makeRule "Route" "Route" "AdminRoute"
 
+    ]
 
 configReset : List Rule
 configReset =

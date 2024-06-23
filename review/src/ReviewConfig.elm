@@ -90,8 +90,6 @@ configMagic =
 
 
       --  ToBackend
-        , Install.TypeVariant.makeRule "Types" "ToBackend" "GetBackendModel"
-        , Install.TypeVariant.makeRule "Types" "ToBackend" "AdminInspect (Maybe User.User)"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AddUser String String String"
         , Install.TypeVariant.makeRule "Types" "ToBackend" "RequestSignUp String String String"
@@ -125,7 +123,7 @@ configMagic =
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "RequestSignUp realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "GetUserDictionary" "( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "GetUserDictionary" "( model, Lamdera.sendToFrontend clientId (GotUserDictionary model.users) )" |> Install.ClauseInCase.makeRule
 
     -- VIEW.MAIN
 
@@ -251,7 +249,6 @@ decode url =
 configReset : List Rule
 configReset =
     [ Install.TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
-    , Install.TypeVariant.makeRule "Types" "ToBackend" "GetBackendModel"
     , Install.TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
     , Install.ClauseInCase.init "Frontend" "updateLoaded" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
         |> Install.ClauseInCase.withInsertAfter "Increment"

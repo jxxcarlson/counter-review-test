@@ -85,8 +85,34 @@ configMagic =
 
       -- Init
 
+     , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
 
-       -- TO FRONTEND
+     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
+     , Install.Initializer.makeRule "Backend" "init" "sessions" "Dict.empty"
+     , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "Dict.empty"
+
+     , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
+     , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
+     , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Nothing"
+
+     , Install.Initializer.makeRule "Backend" "init" "pendingEmailAuths" "Dict.empty"
+     , Install.Initializer.makeRule "Backend" "init" "secretCounter" "0"
+     , Install.Initializer.makeRule "Backend" "init" "sessionDict" "AssocList.empty"
+     , Install.Initializer.makeRule "Backend" "init" "pendingLogins" "AssocList.empty"
+     , Install.Initializer.makeRule "Backend" "init" "log" "[]"
+
+
+--init : ( BackendModel, Cmd BackendMsg )
+--init =
+--    ...
+--    , Cmd.batch
+--        [ Time.now |> Task.perform GotFastTick
+--        , Helper.getAtmosphericRandomNumbers
+--        ]
+--    )
+
+       -- To Frontend
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthToFrontend Auth.Common.ToFrontend"
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AuthSuccess Auth.Common.UserInfo"
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserInfoMsg (Maybe Auth.Common.UserInfo)"

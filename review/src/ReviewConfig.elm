@@ -66,6 +66,10 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.SignInData"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
 
+       -- Loaded Model
+       , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+
+
        -- BackendModel
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
@@ -120,9 +124,7 @@ configMagic =
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Backend" "updateFromFrontend" "RequestSignUp realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AdminInspect maybeUser" "( model, Lamdera.sendToFrontend clientId (AdminInspectResponse model) )" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AdminInspect maybeUser" "( model, Lamdera.sendToFrontend clientId (AdminInspectResponse model) )" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "GetBackendModel" "( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "GetUserDictionary" "( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )" |> Install.ClauseInCase.makeRule
 
     -- VIEW.MAIN
 
@@ -153,8 +155,7 @@ configMagic =
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "SignInError String"
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserSignedIn (Maybe User.User)"
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserRegistered User.User"
-     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "AdminInspectResponse BackendModel"
-     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "GotBackendModel BackendModel"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "GotUserDictionary (Dict.Dict User.EmailString User.User)"
      , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData", "Spell String Int"]
 
 -- ROUTE

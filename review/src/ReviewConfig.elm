@@ -71,10 +71,11 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "magicLinkModel : MagicLink.Types.Model"
 
-       , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Dict.empty"
-       , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Pages.SignIn.init authRedirectBaseUrl"
+       , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Pages.SignIn.init loadingModel.initUrl"
+       , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
 
-
+       -- Install Frontend
+       , Install.Import.initSimple "Frontend" ["Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
        -- BackendModel
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"

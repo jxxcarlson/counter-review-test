@@ -104,6 +104,33 @@ updateLoaded msg model =
         NoOp ->
             ( model, Cmd.none )
 
+        UrlClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model
+                    , Browser.Navigation.pushUrl model.key (Url.toString url)
+                    )
+
+                Browser.External url ->
+                    ( model
+                    , Browser.Navigation.load url
+                    )
+
+        UrlChanged url ->
+            ( { model | route = Route.decode url }, scrollToTop )
+
+        Tick now ->
+            ( { model | now = now }, Cmd.none )
+
+        GotWindowSize width height ->
+            ( { model | window = { width = width, height = height } }, Cmd.none )
+
+        MouseDown ->
+            ( { model | showTooltip = False }, Cmd.none )
+
+        SetViewport ->
+            ( model, Cmd.none )
+
         Increment ->
             ( { model | counter = model.counter + 1 }, sendToBackend CounterIncremented )
 

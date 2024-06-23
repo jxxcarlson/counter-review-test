@@ -1,18 +1,11 @@
 module Types exposing (..)
 
-import AssocList
-import Auth.Common
 import Browser
 import Browser.Navigation exposing (Key)
-import Http
 import Lamdera exposing (ClientId, SessionId)
-import LocalUUID
-import MagicLink.Types
 import Route exposing (Route)
-import Session
 import Time
 import Url exposing (Url)
-import User
 
 
 type alias BackendModel =

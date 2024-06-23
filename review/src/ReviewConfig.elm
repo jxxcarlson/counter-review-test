@@ -49,6 +49,9 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetRoute_ Route"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetAdminDisplay AdminDisplay"
 
+       -- Backend Import
+       , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
+
        -- BACKEND MSG
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
@@ -71,6 +74,7 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
+
 
       --  ToBackend
         , Install.TypeVariant.makeRule "Types" "ToBackend" "GetBackendModel"

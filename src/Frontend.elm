@@ -82,22 +82,21 @@ tryLoading loadingModel =
         (\window ->
             case loadingModel.route of
                 _ ->
-                    initLoaded loadingModel window
+                    initLoaded loadingModel window |> Tuple.mapFirst Loaded
         )
         loadingModel.window
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
 
 
 initLoaded loadingModel window =
-    ( Loaded <|
-        { key = loadingModel.key
-        , now = loadingModel.now
-        , window = window
-        , showTooltip = False
-        , route = loadingModel.route
-        , message = "Starting up ..."
-        , counter = 0
-        }
+    ( { key = loadingModel.key
+      , now = loadingModel.now
+      , window = window
+      , showTooltip = False
+      , route = loadingModel.route
+      , message = "Starting up ..."
+      , counter = 0
+      }
     , Cmd.none
     )
 

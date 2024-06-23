@@ -115,6 +115,13 @@ configMagic =
      , Install.Initializer.makeRule "Backend" "init" "pendingLogins" "AssocList.empty"
      , Install.Initializer.makeRule "Backend" "init" "log" "[]"
 
+     -- updateFromFrontend
+     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "RequestSignup realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Backend" "updateFromFrontend" "AdminInspect maybeUser" "MagicLink.Backend.requestSignUp model clientId realname username email" |> Install.ClauseInCase.makeRule
+
+
 
 --init : ( BackendModel, Cmd BackendMsg )
 --init =

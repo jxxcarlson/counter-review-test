@@ -151,7 +151,7 @@ configMagic =
        -- UpdateLoaded
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "LiftMsg _" "( model, Cmd.none )" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "SetRoute_ route" "( { model | route = route }, Cmd.none )" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst MagicLink.Frontend.updateMagicLinkModelInModel" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.update authFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "SignInUser userData" "MagicLink.Frontend.signIn model userData" |> Install.ClauseInCase.makeRule
 
        -- To Frontend

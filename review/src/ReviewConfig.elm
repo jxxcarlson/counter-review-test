@@ -129,13 +129,15 @@ configMagic =
 
     -- VIEW.MAIN
 
+    , Install.ClauseInCase.init "View.Main" "loadedView" "AdminRoute" adminRoute |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule
+     , Install.ClauseInCase.init "View.Main" "loadedView" "Notes" "generic model Pages.Notes.view" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> Install.ClauseInCase.makeRule
-     , Install.ClauseInCase.init "View.Main" "loadedView" "AdminRoute" "generic model (if User.isAdmin model.magicLinkModel.currentUserData then generic model Pages.Admin.view else generic model Pages.Home.view" |> Install.ClauseInCase.makeRule
+
      , Install.Function.InsertFunction.init "View.Main" "generic" generic |> Install.Function.InsertFunction.makeRule
 
     --
-    , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService"] |> Install.Import.makeRule
+    , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
 
 --init : ( BackendModel, Cmd BackendMsg )
 --init =
@@ -161,13 +163,19 @@ configMagic =
 
 -- ROUTE
      , Install.TypeVariant.makeRule "Route" "Route" "TermsOfServiceRoute"
-     --, Install.TypeVariant.makeRule "Route" "Route" "Notes"
+     , Install.TypeVariant.makeRule "Route" "Route" "Notes"
      , Install.TypeVariant.makeRule "Route" "Route" "SignInRoute"
      , Install.TypeVariant.makeRule "Route" "Route" "AdminRoute"
      , Install.Function.ReplaceFunction.init "Route" "decode" decode |> Install.Function.ReplaceFunction.makeRule
      , Install.Function.ReplaceFunction.init "Route" "encode" encode |> Install.Function.ReplaceFunction.makeRule
 
     ]
+
+adminRoute = """if User.isAdmin model.magicLinkModel.currentUserData then
+        generic model Pages.Admin.view
+    else
+        generic model Pages.Home.view
+"""
 
 generic = """generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
 generic model view_ =
@@ -207,6 +215,9 @@ encode route =
             TermsOfServiceRoute ->
                 [ "terms" ]
 
+            Notes ->
+                [ "notes" ]
+
             SignInRoute ->
                 [ "signin" ]
 
@@ -221,6 +232,9 @@ encode route =
                 []
 
             TermsOfServiceRoute ->
+                []
+
+            Notes ->
                 []
 
             SignInRoute ->
@@ -238,6 +252,7 @@ decode url =
         , Url.Parser.s "admin" |> Url.Parser.map AdminRoute
         , Url.Parser.s "notes" |> Url.Parser.map Notes
         , Url.Parser.s "signin" |> Url.Parser.map SignInRoute
+        , Url.Parser.s "tos" |> Url.Parser.map TermsOfServiceRoute
         ]
         |> (\\a -> Url.Parser.parse a url |> Maybe.withDefault HomepageRoute)
 """

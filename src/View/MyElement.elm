@@ -18,7 +18,6 @@ import Html.Attributes
 import Html.Events
 import Json.Decode as Decode
 import Martin
-import Pages.Parts
 import Route exposing (Route)
 
 

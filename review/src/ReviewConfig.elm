@@ -51,6 +51,15 @@ configMagic =
 
        -- Backend Import
        , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
+       , Install.Import.initSimple "Backend" ["Time"] |> Install.Import.makeRule
+
+       -- Backend update
+       , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
+       , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
+       , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
+       , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
+       , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
+       , Install.ClauseInCase.init "Backend" "update" "OnConnected sessionId clientId" "Reconnect.connect model sessionId clientId" |> Install.ClauseInCase.makeRule
 
        -- BACKEND MSG
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"

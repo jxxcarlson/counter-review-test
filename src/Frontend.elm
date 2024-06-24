@@ -140,18 +140,6 @@ updateLoaded msg model =
         Decrement ->
             ( { model | counter = model.counter - 1 }, sendToBackend CounterDecremented )
 
-        SignInUser userData ->
-            MagicLink.Frontend.signIn model userData
-
-        AuthFrontendMsg authToFrontendMsg ->
-            MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
-
-        SetRoute_ route ->
-            ( { model | route = route }, Cmd.none )
-
-        LiftMsg _ ->
-            ( model, Cmd.none )
-
 
 scrollToTop : Cmd FrontendMsg
 scrollToTop =

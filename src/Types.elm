@@ -67,4 +67,3 @@ type ToFrontend
 type BackendDataStatus
     = Sunny
     | LoadedBackendData
-    | Spell String Int

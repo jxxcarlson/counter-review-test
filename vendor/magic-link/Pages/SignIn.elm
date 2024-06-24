@@ -51,10 +51,6 @@ update msg model =
 
 view : (MagicLink.Types.Msg -> msg) -> Model -> Element MagicLink.Types.Msg
 view toSelf model =
-    let
-        _ =
-            Debug.log "SIGN IN STATUS" model.signInStatus
-    in
     case model.signInStatus of
         MagicLink.Types.NotSignedIn ->
             signInView model
@@ -139,10 +135,7 @@ headerView model route config =
             , Element.Background.color View.Color.blue
             , Element.Font.color (Element.rgb 1 1 1)
             ]
-            [ Element.link
-                (View.Common.linkStyle route Route.HomepageRoute)
-                { url = Route.encode Route.HomepageRoute, label = Element.text "Home" }
-            , if User.isAdmin model.currentUserData then
+            [ if User.isAdmin model.currentUserData then
                 Element.link
                     (View.Common.linkStyle route Route.AdminRoute)
                     { url = Route.encode Route.AdminRoute, label = Element.text "Admin" }

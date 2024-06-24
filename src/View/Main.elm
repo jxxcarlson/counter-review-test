@@ -58,7 +58,13 @@ generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) 
 generic model view_ =
     Element.column
         [ Element.width Element.fill, Element.height Element.fill ]
-        [ header model model.route { window = model.window, isCompact = True }
+        [ Element.row [ Element.width (Element.px model.window.width), Element.Background.color View.Color.blue ]
+            [ headerView model model.route { window = model.window, isCompact = True }
+            , Pages.SignIn.headerView model.magicLinkModel
+                model.route
+                { window = model.window, isCompact = True }
+                |> Element.map Types.AuthFrontendMsg
+            ]
         , Element.column
             (Element.padding 20
                 :: Element.scrollbarY
@@ -71,12 +77,12 @@ generic model view_ =
         ]
 
 
-header : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element Types.FrontendMsg
-header model route config =
+headerView : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element Types.FrontendMsg
+headerView model route config =
     Element.el
         [ Element.Background.color View.Color.blue
         , Element.paddingXY 24 16
-        , Element.width (Element.px config.window.width)
+        , Element.width (Element.px 400)
         , Element.alignTop
         ]
         (Element.wrappedRow

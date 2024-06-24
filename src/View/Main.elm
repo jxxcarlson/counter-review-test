@@ -59,12 +59,7 @@ generic model view_ =
     Element.column
         [ Element.width Element.fill, Element.height Element.fill ]
         [ Element.row [ Element.width (Element.px model.window.width), Element.Background.color View.Color.blue ]
-            [ headerView model model.route { window = model.window, isCompact = True }
-            , Pages.SignIn.headerView model.magicLinkModel
-                model.route
-                { window = model.window, isCompact = True }
-                |> Element.map Types.AuthFrontendMsg
-            ]
+            (headerRow model)
         , Element.column
             (Element.padding 20
                 :: Element.scrollbarY
@@ -75,6 +70,21 @@ generic model view_ =
             ]
         , footer model.route model
         ]
+
+
+headerRow model =
+    [ headerView model model.route { window = model.window, isCompact = True } ]
+
+
+
+--headerRow model =
+--    [ headerView model model.route { window = model.window, isCompact = True }
+--
+--    --, Pages.SignIn.headerView model.magicLinkModel
+--    --    model.route
+--    --    { window = model.window, isCompact = True }
+--    --    |> Element.map Types.AuthFrontendMsg
+--    ]
 
 
 headerView : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element Types.FrontendMsg

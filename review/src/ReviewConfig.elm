@@ -140,6 +140,7 @@ configMagic =
     --
     , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
 
+    , Install.Function.ReplaceFunction.init "View.Main" "headerRow" headerRow |> Install.Function.ReplaceFunction.makeRule
 --init : ( BackendModel, Cmd BackendMsg )
 --init =
 --    ...
@@ -177,15 +178,7 @@ configMagic =
 
     ]
 
-adminRoute0 = "foo"
-
-adminRouteA = """
-    if User.isAdmin model.magicLinkModel.currentUserData then
-        generic model Pages.Admin.view
-
-    else
-        generic model Pages.Home.view
-"""
+headerRow = """headerRow model = [ headerView model model.route { window = model.window, isCompact = True }, Pages.SignIn.headerView model.magicLinkModel model.route { window = model.window, isCompact = True } |> Element.map Types.AuthFrontendMsg ]"""
 
 adminRoute = "if User.isAdmin model.magicLinkModel.currentUserData then generic model Pages.Admin.view else generic model Pages.Home.view"
 

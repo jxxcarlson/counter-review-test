@@ -17,25 +17,6 @@ import User
 
 
 
--- Function to compress runs of spaces to a single space
-
-
-compressSpaces : String -> String
-compressSpaces string =
-    userReplace " +" (\_ -> " ") string
-
-
-userReplace : String -> (Regex.Match -> String) -> String -> String
-userReplace userRegex replacer string =
-    case Regex.fromString userRegex of
-        Nothing ->
-            string
-
-        Just regex ->
-            Regex.replace regex replacer string
-
-
-
 -- MAGICLINK
 -- TODO: this is a hack based on a lack of understanding of what is going on.
 -- in Martin's code.

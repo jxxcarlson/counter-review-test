@@ -84,6 +84,8 @@ configMagic =
        , Install.ClauseInCase.init "Frontend" "updateFromBackendLoaded" "GotUserDictionary users" "( { model | users = users }, Cmd.none )"
                  |> Install.ClauseInCase.withInsertAtBeginning |> Install.ClauseInCase.makeRule
 
+      , Install.ClauseInCase.init "Frontend" "updateFromBackendLoaded" "UserRegistered user" "MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
+         |> Install.ClauseInCase.withInsertAtBeginning |> Install.ClauseInCase.makeRule
 
        -- Install Frontend
        , Install.Import.initSimple "Frontend" ["MagicLink.Frontend", "MagicLink.Auth", "Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
@@ -313,7 +315,7 @@ updateFromBackendLoaded = """updateFromBackendLoaded msg model =
     in
     case msg of
         AuthToFrontend authToFrontendMsg ->
-            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst updateMagicLinkModelInModel
+            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
 
         GotUserDictionary users ->
             ( { model | users = users }, Cmd.none )

@@ -20,6 +20,7 @@ import Install.Initializer
 import Install.InitializerCmd
 import Install.Type
 import Install.TypeVariant
+import Regex
 import Review.Rule exposing (Rule)
 
 
@@ -73,6 +74,7 @@ configMagic =
 
        , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Pages.SignIn.init loadingModel.initUrl"
        , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
+       , Install.Function.ReplaceFunction.init "Frontend" "updateFromBackendLoaded" (asOneLine updateFromBackendLoaded) |> Install.Function.ReplaceFunction.makeRule
 
        -- Install Frontend
        , Install.Import.initSimple "Frontend" ["MagicLink.Frontend", "MagicLink.Auth", "Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
@@ -93,7 +95,7 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
-
+       , Install.Import.initSimple "Frontend" ["MagicLink.Types"] |> Install.Import.makeRule
 
       --  ToBackend
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
@@ -290,3 +292,99 @@ viewFunction =
         , Html.button [ onClick Decrement ] [ text "-" ]
         , Html.div [] [Html.button [ onClick Reset, style "margin-top" "10px"] [ text "Reset" ]]
         ] |> Element.html   """
+
+updateFromBackendLoaded = """updateFromBackendLoaded msg model =
+    let
+        updateMagicLinkModelInModel =
+            \\magicLinkModel -> { model | magicLinkModel = magicLinkModel }
+    in
+    case msg of
+        AuthToFrontend authToFrontendMsg ->
+            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst updateMagicLinkModelInModel
+
+        GotUserDictionary users ->
+            ( { model | users = users }, Cmd.none )
+
+        -- MAGICLINK
+        AuthSuccess userInfo ->
+            -- TODO (placholder)
+            case userInfo.username of
+                Just username ->
+                    let
+                        magicLinkModel_ =
+                            model.magicLinkModel
+
+                        magicLinkModel =
+                            { magicLinkModel_ | authFlow = Auth.Common.Authorized userInfo.email username }
+                    in
+                    ( { model | magicLinkModel = magicLinkModel }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        UserInfoMsg _ ->
+            -- TODO (placholder)
+            ( model, Cmd.none )
+
+        SignInError message ->
+            MagicLink.Frontend.handleSignInError model.magicLinkModel message
+                |> Tuple.mapFirst updateMagicLinkModelInModel
+
+        RegistrationError str ->
+            MagicLink.Frontend.handleRegistrationError model.magicLinkModel str
+                |> Tuple.mapFirst updateMagicLinkModelInModel
+
+        CheckSignInResponse _ ->
+            ( model, Cmd.none )
+
+        GetLoginTokenRateLimited ->
+            ( model, Cmd.none )
+
+        UserRegistered user ->
+            MagicLink.Frontend.userRegistered model.magicLinkModel user
+                |> Tuple.mapFirst updateMagicLinkModelInModel
+
+        --|> Tuple.mapFirst updateMagicLinkModel
+        UserSignedIn maybeUser ->
+            let
+                magicLinkModel_ =
+                    model.magicLinkModel
+
+                magicLinkModel =
+                    case maybeUser of
+                        Nothing ->
+                            { magicLinkModel_ | signInStatus = MagicLink.Types.NotSignedIn } |> Debug.log "USER NOT SIGNED IN (1)"
+
+                        Just _ ->
+                            { magicLinkModel_ | signInStatus = MagicLink.Types.SignedIn } |> Debug.log "USER SIGNED IN (2)"
+            in
+            ( updateMagicLinkModelInModel magicLinkModel, Cmd.none )
+
+        GotMessage message ->
+            ( { model | message = message }, Cmd.none )
+"""
+
+asOneLine : String -> String
+asOneLine str =
+    str
+      |>String.trim
+      |>compressSpaces
+      |> String.split "\n"
+      |> List.filter (\s -> s /= "")
+      |> String.join " "
+
+
+compressSpaces : String -> String
+compressSpaces string =
+    userReplace " +" (\_ -> " ") string
+
+
+userReplace : String -> (Regex.Match -> String) -> String -> String
+userReplace userRegex replacer string =
+    case Regex.fromString userRegex of
+        Nothing ->
+            string
+
+        Just regex ->
+            Regex.replace regex replacer string
+

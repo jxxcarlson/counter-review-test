@@ -1,5 +1,6 @@
 module MagicLink.Helper exposing
-    ( getAtmosphericRandomNumbers
+    ( compressSpaces
+    , getAtmosphericRandomNumbers
     , testUserDictionary
     , trigger
     )
@@ -8,10 +9,30 @@ import Dict
 import EmailAddress
 import Http
 import LocalUUID
+import Regex exposing (Regex, replace)
 import Task
 import Time
 import Types
 import User
+
+
+
+-- Function to compress runs of spaces to a single space
+
+
+compressSpaces : String -> String
+compressSpaces string =
+    userReplace " +" (\_ -> " ") string
+
+
+userReplace : String -> (Regex.Match -> String) -> String -> String
+userReplace userRegex replacer string =
+    case Regex.fromString userRegex of
+        Nothing ->
+            string
+
+        Just regex ->
+            Regex.replace regex replacer string
 
 
 

@@ -315,6 +315,12 @@ sendLoginEmail_ msg emailAddress loginCode =
     let
         _ =
             Debug.log "XX: ML.BE, sendLoginEmail_" loginCode
+
+        _ =
+            Debug.log "XX: emailAddress" emailAddress
+
+        _ =
+            Debug.log "XX: loginCode" loginCode
     in
     { from = { name = "", email = noReplyEmailAddress }
     , to = List.Nonempty.fromElement { name = "", email = emailAddress }

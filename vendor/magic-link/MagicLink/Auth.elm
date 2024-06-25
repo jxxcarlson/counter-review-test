@@ -97,8 +97,20 @@ updateFromBackend authToFrontendMsg model =
             ( model, Cmd.none )
 
         Auth.Common.AuthSignInWithTokenResponse result ->
+            -- TODO: HERE!!
+            let
+                _ =
+                    Debug.log "XX, AUTH SIGN IN WITH TOKEN" 1
+
+                _ =
+                    Debug.log "XX, AUTH SIGN IN WITH TOKEN, reult" result
+            in
             case result of
                 Ok userData ->
+                    let
+                        _ =
+                            Debug.log "XX, AUTH SIGN IN WITH TOKEN" 2
+                    in
                     { model
                         | currentUserData = Just userData
                         , authFlow =
@@ -111,7 +123,7 @@ updateFromBackend authToFrontendMsg model =
                         -- TODO, disable as test:, signInStatus = MagicLink.Types.SignedIn
                     }
                         |> MagicLink.Frontend.signInWithTokenResponseM userData
-                        |> (\( m, c ) -> ( m, Cmd.batch [ c, MagicLink.Frontend.signInWithTokenResponseC userData ] ))
+                        |> (\( m, c ) -> ( m, Cmd.batch [ c, MagicLink.Frontend.signInWithTokenResponseC userData, Helper.trigger <| SetRoute_ Route.HomepageRoute ] ))
 
                 Err _ ->
                     ( model, Cmd.none )

@@ -73,7 +73,17 @@ configMagic =
 
        , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Pages.SignIn.init loadingModel.initUrl"
        , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
-       , Install.Function.ReplaceFunction.init "Frontend" "updateFromBackendLoaded" (asOneLine updateFromBackendLoaded) |> Install.Function.ReplaceFunction.makeRule
+       -- , Install.Function.ReplaceFunction.init "Frontend" "updateFromBackendLoaded" (asOneLine updateFromBackendLoaded) |> Install.Function.ReplaceFunction.makeRule
+
+       --, Install.Function.InsertFunction.init "Frontend" "updateMagicLinkModelInModel" "updateMagicLinkModelInModel model magicLinkModel -> { model | magicLinkModel = magicLinkModel }"
+       --         -- |> Install.Function.InsertFunction.withInsertAfter "updateFromBackendLoaded"
+       --          |> Install.Function.InsertFunction.makeRule
+
+       , Install.ClauseInCase.init "Frontend" "updateFromBackendLoaded" "AuthToFrontend authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
+          |> Install.ClauseInCase.withInsertAtBeginning |> Install.ClauseInCase.makeRule
+
+
+
 
        -- Install Frontend
        , Install.Import.initSimple "Frontend" ["MagicLink.Frontend", "MagicLink.Auth", "Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
@@ -144,7 +154,7 @@ configMagic =
     --
     , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
 
-    , Install.Function.ReplaceFunction.init "View.Main" "headerRow" headerRow |> Install.Function.ReplaceFunction.makeRule
+    , Install.Function.ReplaceFunction.init "View.Main" "headerRow" (asOneLine headerRow) |> Install.Function.ReplaceFunction.makeRule
 --init : ( BackendModel, Cmd BackendMsg )
 --init =
 --    ...
@@ -294,6 +304,8 @@ viewFunction =
         , Html.div [] [Html.button [ onClick Reset, style "margin-top" "10px"] [ text "Reset" ]]
         ] |> Element.html   """
 
+
+
 updateFromBackendLoaded = """updateFromBackendLoaded msg model =
     let
         updateMagicLinkModelInModel =
@@ -379,7 +391,7 @@ asOneLine str =
         |> String.trim
         |> compressSpaces
         |> String.split "\n"
-        |> List.filter (\s -> s /= "")
+        -- |> List.filter (\s -> s /= "")
         |> String.join " "
 
 

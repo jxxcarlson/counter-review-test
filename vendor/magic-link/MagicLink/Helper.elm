@@ -1,6 +1,5 @@
 module MagicLink.Helper exposing
-    ( compressSpaces
-    , getAtmosphericRandomNumbers
+    ( getAtmosphericRandomNumbers
     , testUserDictionary
     , trigger
     )
@@ -9,7 +8,6 @@ import Dict
 import EmailAddress
 import Http
 import LocalUUID
-import Regex exposing (Regex, replace)
 import Task
 import Time
 import Types

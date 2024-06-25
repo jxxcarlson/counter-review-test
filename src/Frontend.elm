@@ -156,81 +156,8 @@ updateFromBackend msg model =
             updateFromBackendLoaded msg loaded |> Tuple.mapFirst Loaded
 
 
-
---updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
---updateFromBackendLoaded msg model =
---    case msg of
---        _ ->
---            ( model, Cmd.none )
-
-
-updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
+updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
-    let
-        updateMagicLinkModelInModel =
-            \magicLinkModel -> { model | magicLinkModel = magicLinkModel }
-    in
     case msg of
-        AuthToFrontend authToFrontendMsg ->
-            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst updateMagicLinkModelInModel
-
-        GotUserDictionary users ->
-            ( { model | users = users }, Cmd.none )
-
-        -- MAGICLINK
-        AuthSuccess userInfo ->
-            -- TODO (placholder)
-            case userInfo.username of
-                Just username ->
-                    let
-                        magicLinkModel_ =
-                            model.magicLinkModel
-
-                        magicLinkModel =
-                            { magicLinkModel_ | authFlow = Auth.Common.Authorized userInfo.email username }
-                    in
-                    ( { model | magicLinkModel = magicLinkModel }, Cmd.none )
-
-                Nothing ->
-                    ( model, Cmd.none )
-
-        UserInfoMsg _ ->
-            -- TODO (placholder)
+        _ ->
             ( model, Cmd.none )
-
-        SignInError message ->
-            MagicLink.Frontend.handleSignInError model.magicLinkModel message
-                |> Tuple.mapFirst updateMagicLinkModelInModel
-
-        RegistrationError str ->
-            MagicLink.Frontend.handleRegistrationError model.magicLinkModel str
-                |> Tuple.mapFirst updateMagicLinkModelInModel
-
-        CheckSignInResponse _ ->
-            ( model, Cmd.none )
-
-        GetLoginTokenRateLimited ->
-            ( model, Cmd.none )
-
-        UserRegistered user ->
-            MagicLink.Frontend.userRegistered model.magicLinkModel user
-                |> Tuple.mapFirst updateMagicLinkModelInModel
-
-        --|> Tuple.mapFirst updateMagicLinkModel
-        UserSignedIn maybeUser ->
-            let
-                magicLinkModel_ =
-                    model.magicLinkModel
-
-                magicLinkModel =
-                    case maybeUser of
-                        Nothing ->
-                            { magicLinkModel_ | signInStatus = MagicLink.Types.NotSignedIn } |> Debug.log "USER NOT SIGNED IN (1)"
-
-                        Just _ ->
-                            { magicLinkModel_ | signInStatus = MagicLink.Types.SignedIn } |> Debug.log "USER SIGNED IN (2)"
-            in
-            ( updateMagicLinkModelInModel magicLinkModel, Cmd.none )
-
-        GotMessage message ->
-            ( { model | message = message }, Cmd.none )

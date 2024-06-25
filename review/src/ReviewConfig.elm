@@ -41,7 +41,6 @@ configMagic =
 
 
        -- TO FRONTEND
-       , Install.TypeVariant.makeRule "Types" "ToFrontend" "OnConnected SessionId ClientId"
 
        -- FRONTEND MSG
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SignInUser User.SignInData"
@@ -53,7 +52,6 @@ configMagic =
        , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
        , Install.Import.initSimple "Backend" ["Time"] |> Install.Import.makeRule
        , Install.Import.initSimple "Backend" ["Task"] |> Install.Import.makeRule
-
        -- Backend update
        , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
@@ -95,7 +93,7 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
-       , Install.Import.initSimple "Frontend" ["MagicLink.Types"] |> Install.Import.makeRule
+       , Install.Import.initSimple "Frontend" ["MagicLink.Types", "Auth.Common"] |> Install.Import.makeRule
 
       --  ToBackend
         , Install.TypeVariant.makeRule "Types" "ToBackend" "AuthToBackend Auth.Common.ToBackend"
@@ -171,6 +169,8 @@ configMagic =
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserSignedIn (Maybe User.User)"
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "UserRegistered User.User"
      , Install.TypeVariant.makeRule "Types" "ToFrontend"    "GotUserDictionary (Dict.Dict User.EmailString User.User)"
+     , Install.TypeVariant.makeRule "Types" "ToFrontend"    "GotMessage String"
+
      , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData", "Spell String Int"]
 
 -- ROUTE

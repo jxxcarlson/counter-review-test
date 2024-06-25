@@ -77,6 +77,10 @@ updateFromFrontend { asBackendMsg } clientId sessionId authToBackend model =
             MagicLink.Backend.checkLogin model clientId sessionId
 
         Auth.Common.AuthSigninInitiated params ->
+            let
+                _ =
+                    Debug.log "XX: Auth.Flow, AuthSigninInitiated" 1
+            in
             ( model
             , withCurrentTime
                 (\now ->
@@ -161,6 +165,9 @@ backendUpdate :
     -> ( { backendModel | pendingAuths : Dict Auth.Common.SessionId Auth.Common.PendingAuth }, Cmd backendMsg )
 backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMethod, handleAuthSuccess, renewSession, logout, isDev } authMsg =
     let
+        _ =
+            Debug.log "XX, HERE IS " "backendUpdate"
+
         authError str =
             asToFrontend (Auth.Common.AuthError str)
 
@@ -174,6 +181,10 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
                 Just method ->
                     fn method
     in
+    let
+        _ =
+            Debug.log "XX: Auth.Flow, backendUpdate" ( 1, authMsg )
+    in
     case authMsg of
         Auth.Common.AuthSentLoginEmail now emailAddress result ->
             --( backendModel, MagicLink.Backend.sendLoginEmail_ (Types.AuthBackendMsg << (Auth.Common.AuthSentLoginEmail now emailAddress)) emailAddress 1234)
@@ -185,6 +196,10 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
                 (\method ->
                     case method of
                         Auth.Common.ProtocolEmailMagicLink config ->
+                            let
+                                _ =
+                                    Debug.log "XX: Auth.Flow, backendUpdate" 2
+                            in
                             config.initiateSignin sessionId clientId backendModel { username = username } now
 
                         Auth.Common.ProtocolOAuth config ->
@@ -236,6 +251,10 @@ signInRequested :
     -> Maybe String
     -> ( { frontendModel | authFlow : Auth.Common.Flow, authRedirectBaseUrl : Url }, Auth.Common.ToBackend )
 signInRequested methodId model username =
+    let
+        _ =
+            Debug.log "XX: Auth.Flow, AuthSigninInitiated" 2
+    in
     ( { model | authFlow = Auth.Common.Requested methodId }
     , Auth.Common.AuthSigninInitiated { methodId = methodId, baseUrl = model.authRedirectBaseUrl, username = username }
     )

@@ -146,6 +146,10 @@ initiateEmailSignin sessionId clientId model login now =
                     ( model, MagicLink.Common.sendMessage clientId "Invalid email address." )
 
                 Just emailAddress_ ->
+                    let
+                        _ =
+                            Debug.log "XX, USERS" model.users
+                    in
                     case model.users |> Dict.get emailString of
                         Just user ->
                             let

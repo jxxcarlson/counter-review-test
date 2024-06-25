@@ -17,6 +17,7 @@ import Install.Function.InsertFunction
 import Install.Function.ReplaceFunction
 import Install.Import
 import Install.Initializer
+import Install.InitializerCmd
 import Install.Type
 import Install.TypeVariant
 import Review.Rule exposing (Rule)
@@ -50,6 +51,7 @@ configMagic =
        -- Backend Import
        , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
        , Install.Import.initSimple "Backend" ["Time"] |> Install.Import.makeRule
+       , Install.Import.initSimple "Backend" ["Task"] |> Install.Import.makeRule
 
        -- Backend update
        , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
@@ -58,6 +60,7 @@ configMagic =
        , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
 
+       , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "Helper.getAtmosphericRandomNumbers" ]
        -- BACKEND MSG
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"

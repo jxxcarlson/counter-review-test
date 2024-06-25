@@ -25,6 +25,7 @@ import Review.Rule exposing (Rule)
 
 
 
+
 -- CONFIG, Possibilities: configReset, configUsers
 
 
@@ -362,16 +363,24 @@ updateFromBackendLoaded = """updateFromBackendLoaded msg model =
 
         GotMessage message ->
             ( { model | message = message }, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 """
+
+
+
+-- Function to compress runs of spaces to a single space
+
 
 asOneLine : String -> String
 asOneLine str =
     str
-      |>String.trim
-      |>compressSpaces
-      |> String.split "\n"
-      |> List.filter (\s -> s /= "")
-      |> String.join " "
+        |> String.trim
+        |> compressSpaces
+        |> String.split "\n"
+        |> List.filter (\s -> s /= "")
+        |> String.join " "
 
 
 compressSpaces : String -> String
@@ -387,4 +396,5 @@ userReplace userRegex replacer string =
 
         Just regex ->
             Regex.replace regex replacer string
+
 

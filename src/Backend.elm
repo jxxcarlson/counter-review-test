@@ -64,6 +64,9 @@ update msg model =
         AuthBackendMsg authMsg ->
             Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg
 
+        OnConnected sessionId clientId ->
+            Reconnect.connect model sessionId clientId
+
         AutoLogin sessionId loginData ->
             ( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )
 
@@ -101,4 +104,5 @@ updateFromFrontend sessionId clientId msg model =
 subscriptions model =
     Sub.batch
         [ Lamdera.onConnect ClientConnected
+        , Lamdera.onConnect OnConnected
         ]

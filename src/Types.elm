@@ -88,6 +88,7 @@ type ToBackend
 
 type BackendMsg
     = ClientConnected SessionId ClientId
+    | OnConnected SessionId ClientId
     | Noop
     | GotAtmosphericRandomNumbers (Result Http.Error String)
     | AuthBackendMsg Auth.Common.BackendMsg

@@ -49,6 +49,8 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "SetRoute_ Route"
        , Install.TypeVariant.makeRule "Types" "FrontendMsg" "LiftMsg MagicLink.Types.Msg"
 
+
+
        -- Backend Import
        , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
        , Install.Import.initSimple "Backend" ["Time"] |> Install.Import.makeRule
@@ -58,6 +60,7 @@ configMagic =
        , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
+       , Install.ClauseInCase.init "Backend" "update" "OnConnected sessionId clientId" "Reconnect.connect model sessionId clientId" |> Install.ClauseInCase.makeRule
 
        , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "Helper.getAtmosphericRandomNumbers" ]
        -- BACKEND MSG
@@ -65,6 +68,7 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.SignInData"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
+       , Install.TypeVariant.makeRule "Types" "BackendMsg" "OnConnected SessionId ClientId"
 
        -- Loaded Model
        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"

@@ -1,8 +1,6 @@
 .DS_Store
 .idea/
 elm-stuff
-magic-link/magic-link/Config.elm
-vendor/magic-link/Config.elm
-src/
+
 
 

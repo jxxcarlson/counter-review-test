@@ -55,7 +55,6 @@ configMagic =
        , Install.Import.initSimple "Backend" ["Task"] |> Install.Import.makeRule
        -- Backend update
        , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
-       , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
@@ -157,14 +156,7 @@ configMagic =
     , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
 
     , Install.Function.ReplaceFunction.init "View.Main" "headerRow" (asOneLine headerRow) |> Install.Function.ReplaceFunction.makeRule
---init : ( BackendModel, Cmd BackendMsg )
---init =
---    ...
---    , Cmd.batch
---        [ Time.now |> Task.perform GotFastTick
---        , Helper.getAtmosphericRandomNumbers
---        ]
---    )
+
        -- UpdateLoaded
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "LiftMsg _" "( model, Cmd.none )" |> Install.ClauseInCase.makeRule
      , Install.ClauseInCase.init "Frontend" "updateLoaded" "SetRoute_ route" "( { model | route = route }, Cmd.none )" |> Install.ClauseInCase.makeRule
@@ -200,11 +192,6 @@ headerRow = """headerRow model = [ headerView model model.route { window = model
 
 adminRoute = "if User.isAdmin model.magicLinkModel.currentUserData then generic model Pages.Admin.view else generic model Pages.Home.view"
 
-adminRoute1 = """if User.isAdmin model.magicLinkModel.currentUserData then
-        generic model Pages.Admin.view
-    else
-        generic model Pages.Home.view
-"""
 
 generic = """generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
 generic model view_ =
@@ -305,82 +292,6 @@ viewFunction =
         , Html.button [ onClick Decrement ] [ text "-" ]
         , Html.div [] [Html.button [ onClick Reset, style "margin-top" "10px"] [ text "Reset" ]]
         ] |> Element.html   """
-
-
-
-updateFromBackendLoaded = """updateFromBackendLoaded msg model =
-    let
-        updateMagicLinkModelInModel =
-            \\magicLinkModel -> { model | magicLinkModel = magicLinkModel }
-    in
-    case msg of
-        AuthToFrontend authToFrontendMsg ->
-            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
-
-        GotUserDictionary users ->
-            ( { model | users = users }, Cmd.none )
-
-        -- MAGICLINK
-        AuthSuccess userInfo ->
-            -- TODO (placholder)
-            case userInfo.username of
-                Just username ->
-                    let
-                        magicLinkModel_ =
-                            model.magicLinkModel
-
-                        magicLinkModel =
-                            { magicLinkModel_ | authFlow = Auth.Common.Authorized userInfo.email username }
-                    in
-                    ( { model | magicLinkModel = magicLinkModel }, Cmd.none )
-
-                Nothing ->
-                    ( model, Cmd.none )
-
-        UserInfoMsg _ ->
-            -- TODO (placholder)
-            ( model, Cmd.none )
-
-        SignInError message ->
-            MagicLink.Frontend.handleSignInError model.magicLinkModel message
-                |> Tuple.mapFirst updateMagicLinkModelInModel
-
-        RegistrationError str ->
-            MagicLink.Frontend.handleRegistrationError model.magicLinkModel str
-                |> Tuple.mapFirst updateMagicLinkModelInModel
-
-        CheckSignInResponse _ ->
-            ( model, Cmd.none )
-
-        GetLoginTokenRateLimited ->
-            ( model, Cmd.none )
-
-        UserRegistered user ->
-            MagicLink.Frontend.userRegistered model.magicLinkModel user
-                |> Tuple.mapFirst updateMagicLinkModelInModel
-
-        --|> Tuple.mapFirst updateMagicLinkModel
-        UserSignedIn maybeUser ->
-            let
-                magicLinkModel_ =
-                    model.magicLinkModel
-
-                magicLinkModel =
-                    case maybeUser of
-                        Nothing ->
-                            { magicLinkModel_ | signInStatus = MagicLink.Types.NotSignedIn } |> Debug.log "USER NOT SIGNED IN (1)"
-
-                        Just _ ->
-                            { magicLinkModel_ | signInStatus = MagicLink.Types.SignedIn } |> Debug.log "USER SIGNED IN (2)"
-            in
-            ( updateMagicLinkModelInModel magicLinkModel, Cmd.none )
-
-        GotMessage message ->
-            ( { model | message = message }, Cmd.none )
-
-        _ ->
-            ( model, Cmd.none )
-"""
 
 
 

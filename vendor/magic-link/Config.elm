@@ -15,7 +15,7 @@ contactEmail =
 
 postmarkApiKey : Postmark.ApiKey
 postmarkApiKey =
-    Env.postmarkApiKey
+    Postmark.apiKey Env.postmarkApiKey
 
 
 secretKey =

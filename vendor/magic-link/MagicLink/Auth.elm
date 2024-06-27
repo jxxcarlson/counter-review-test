@@ -37,12 +37,6 @@ update msg model =
             MagicLink.Frontend.signInWithCode model loginCode
 
         MagicLink.Types.CancelSignIn ->
-            let
-                _ =
-                    Debug.log "CANCEL SIGN IN (1)" True
-            in
-            --( model, Helper.trigger <| AuthFrontendMsg <| MagicLink.Types.SetRoute Route.HomepageRoute )
-            -- ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Helper.trigger <| AuthFrontendMsg <| MagicLink.Types.SetRoute Route.HomepageRoute )
             ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Helper.trigger (Types.SetRoute_ Route.HomepageRoute) )
 
         MagicLink.Types.CancelSignUp ->
@@ -97,20 +91,8 @@ updateFromBackend authToFrontendMsg model =
             ( model, Cmd.none )
 
         Auth.Common.AuthSignInWithTokenResponse result ->
-            -- TODO: HERE!!
-            let
-                _ =
-                    Debug.log "XX, AUTH SIGN IN WITH TOKEN" 1
-
-                _ =
-                    Debug.log "XX, AUTH SIGN IN WITH TOKEN, reult" result
-            in
             case result of
                 Ok userData ->
-                    let
-                        _ =
-                            Debug.log "XX, AUTH SIGN IN WITH TOKEN" 2
-                    in
                     { model
                         | currentUserData = Just userData
                         , authFlow =
@@ -158,10 +140,6 @@ initiateEmailSignin sessionId clientId model login now =
                     ( model, MagicLink.Common.sendMessage clientId "Invalid email address." )
 
                 Just emailAddress_ ->
-                    let
-                        _ =
-                            Debug.log "XX, USERS" model.users
-                    in
                     case model.users |> Dict.get emailString of
                         Just user ->
                             let

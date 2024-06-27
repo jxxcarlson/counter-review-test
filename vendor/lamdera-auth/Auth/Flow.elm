@@ -20,6 +20,7 @@ import Auth.Method.EmailMagicLink
 import Auth.Protocol.OAuth
 import Browser.Navigation as Navigation
 import Dict exposing (Dict)
+import Lamdera
 import List.Extra as List
 import MagicLink.Backend
 import Task
@@ -68,6 +69,13 @@ onFrontendLogoutCallback navigationMsg =
 --- updateFromFrontend : { a | asBackendMsg : Auth.Common.BackendMsg -> b } -> Auth.Common.ClientId -> Auth.Common.SessionId -> ToBackend -> e -> ( e, Cmd b )
 
 
+updateFromFrontend :
+    { a | asBackendMsg : Auth.Common.BackendMsg -> Types.BackendMsg }
+    -> Lamdera.ClientId
+    -> Lamdera.SessionId
+    -> ToBackend
+    -> Types.BackendModel
+    -> ( Types.BackendModel, Cmd Types.BackendMsg )
 updateFromFrontend { asBackendMsg } clientId sessionId authToBackend model =
     case authToBackend of
         Auth.Common.AuthSigInWithToken loginCode ->

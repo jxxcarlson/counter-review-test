@@ -139,7 +139,10 @@ handleExistingSession : BackendModel -> String -> SessionId -> ClientId -> Int -
 handleExistingSession model username sessionId clientId magicToken =
     case getUserWithUsername model username of
         Just user ->
-            ( { model | users = User.setAsVerified model.time user model.users }
+            ( { model
+                | users = User.setAsVerified model.time user model.users
+                , sessionDict = AssocList.insert sessionId user.emailString model.sessionDict |> Debug.log "XX, sessionDict (1)"
+              }
             , Cmd.batch
                 [ Lamdera.sendToFrontend sessionId
                     (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse (Ok <| User.signinDataOfUser user))

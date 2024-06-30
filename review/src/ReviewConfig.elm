@@ -20,6 +20,7 @@ import Install.Initializer
 import Install.InitializerCmd
 import Install.Type
 import Install.TypeVariant
+import Install.Subscription
 import Regex
 import Review.Rule exposing (Rule)
 
@@ -35,6 +36,8 @@ config =
 configMagic : List Rule
 configMagic =
     [ --TYPES
+
+        -- SUBSCRIPTION
 
          -- IMPORTS
          Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User", "Http"] |> Install.Import.makeRule

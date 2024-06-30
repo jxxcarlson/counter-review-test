@@ -160,7 +160,7 @@ configMagic =
      , Install.Function.InsertFunction.init "View.Main" "generic" generic |> Install.Function.InsertFunction.makeRule
 
     --
-    , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
+    , Install.Import.initSimple "View.Main" ["Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes", "User"] |> Install.Import.makeRule
 
     , Install.Function.ReplaceFunction.init "View.Main" "headerRow" (asOneLine headerRow) |> Install.Function.ReplaceFunction.makeRule
 

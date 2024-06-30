@@ -7,12 +7,11 @@ install:
 	npx elm-review --fix-all
 
 uninstall:
-    cp vendor-open/Env.elm src/
+	cp vendor-open/Env.elm src/
 	cp -r counter-original/src/. src/
 
 commit:
 	cp -r counter-original/src/. src/
 	cp vendor-open/Env.elm src/
 	git commit -a
-
 

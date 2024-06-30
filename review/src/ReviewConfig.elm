@@ -97,6 +97,9 @@ configMagic =
       , Install.ClauseInCase.init "Frontend" "updateFromBackendLoaded" "UserRegistered user" "MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
          |> Install.ClauseInCase.withInsertAtBeginning |> Install.ClauseInCase.makeRule
 
+      , Install.ClauseInCase.init "Frontend" "updateFromBackendLoaded" "GotMessage message" "({model | message = message}, Cmd.none)"
+              |> Install.ClauseInCase.withInsertAtBeginning |> Install.ClauseInCase.makeRule
+
        -- Install Frontend
        , Install.Import.initSimple "Frontend" ["MagicLink.Frontend", "MagicLink.Auth", "Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
        -- BackendModel

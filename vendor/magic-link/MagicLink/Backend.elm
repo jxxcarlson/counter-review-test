@@ -235,7 +235,7 @@ addUser1 model clientId emailString emailAddress realname username =
 addUser2 model clientId emailString emailAddress realname username =
     case model.localUuidData of
         Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+            ( model, Lamdera.sendToFrontend clientId (GotMessage "Error: no model.localUuidData") )
 
         Just uuidData ->
             let

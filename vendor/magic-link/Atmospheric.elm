@@ -17,7 +17,7 @@ gotNumbers model tryRandomAtmosphericNumbers =
         randomNumbers =
             case tryRandomAtmosphericNumbers of
                 Err _ ->
-                    [ 235880,	700828,	253400,	602641]
+                    [ 235880, 700828, 253400, 602641 ]
 
                 Ok rns ->
                     let

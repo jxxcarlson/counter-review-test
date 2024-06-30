@@ -57,7 +57,7 @@ generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) 
 generic model view_ =
     Element.column
         [ Element.width Element.fill, Element.height Element.fill ]
-        [ header model model.route { window = model.window, isCompact = True }
+        [ headerView model model.route { window = model.window, isCompact = True }
         , Element.column
             (Element.padding 20
                 :: Element.scrollbarY
@@ -70,8 +70,8 @@ generic model view_ =
         ]
 
 
-header : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element Types.FrontendMsg
-header model route config =
+headerView : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element Types.FrontendMsg
+headerView model route config =
     Element.el
         [ Element.Background.color View.Color.blue
         , Element.paddingXY 24 16

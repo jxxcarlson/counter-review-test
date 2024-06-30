@@ -37,10 +37,9 @@ configMagic : List Rule
 configMagic =
     [ --TYPES
 
-        -- SUBSCRIPTION
 
          -- IMPORTS
-         Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User", "Http"] |> Install.Import.makeRule
+        Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User", "Http"] |> Install.Import.makeRule
        , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
 
 
@@ -79,6 +78,11 @@ configMagic =
 
        , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Pages.SignIn.init loadingModel.initUrl"
        , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
+
+        , Install.Function.ReplaceFunction.init "Frontend" "tryLoading" tryLoading
+           |> Install.Function.ReplaceFunction.makeRule
+
+
        -- , Install.Function.ReplaceFunction.init "Frontend" "updateFromBackendLoaded" (asOneLine updateFromBackendLoaded) |> Install.Function.ReplaceFunction.makeRule
 
        --, Install.Function.InsertFunction.init "Frontend" "updateMagicLinkModelInModel" "updateMagicLinkModelInModel model magicLinkModel -> { model | magicLinkModel = magicLinkModel }"
@@ -193,6 +197,10 @@ configMagic =
      , Install.Function.ReplaceFunction.init "Route" "decode" decode |> Install.Function.ReplaceFunction.makeRule
      , Install.Function.ReplaceFunction.init "Route" "encode" encode |> Install.Function.ReplaceFunction.makeRule
 
+ -- SUBSCRIPTION
+
+   --  , Install.Subscription.makeRule "Backend" "Lamdera.onConnect OnConnected"
+
     ]
 
 headerRow = """headerRow model = [ headerView model model.route { window = model.window, isCompact = True }, Pages.SignIn.headerView model.magicLinkModel model.route { window = model.window, isCompact = True } |> Element.map Types.AuthFrontendMsg ]"""
@@ -300,7 +308,36 @@ viewFunction =
         , Html.div [] [Html.button [ onClick Reset, style "margin-top" "10px"] [ text "Reset" ]]
         ] |> Element.html   """
 
-
+tryLoading = """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
+tryLoading loadingModel =
+    Maybe.map
+        (\\window ->
+            case loadingModel.route of
+                _ ->
+                    let
+                        authRedirectBaseUrl =
+                            let
+                                initUrl =
+                                    loadingModel.initUrl
+                            in
+                            { initUrl | query = Nothing, fragment = Nothing }
+                    in
+                    ( Loaded
+                        { key = loadingModel.key
+                        , now = loadingModel.now
+                        , counter = 0
+                        , window = window
+                        , showTooltip = False
+                        , magicLinkModel = Pages.SignIn.init authRedirectBaseUrl
+                        , route = loadingModel.route
+                        , message = "Starting up ..."
+                        , users = Dict.empty
+                        }
+                    , Cmd.none
+                    )
+        )
+        loadingModel.window
+        |> Maybe.withDefault ( Loading loadingModel, Cmd.none )"""
 
 -- Function to compress runs of spaces to a single space
 

@@ -167,7 +167,7 @@ updateFromBackend msg model =
             updateFromBackendLoaded msg loaded |> Tuple.mapFirst Loaded
 
 
-updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
+updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 updateFromBackendLoaded msg model =
     case msg of
         _ ->

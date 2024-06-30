@@ -1,21 +1,11 @@
 module Frontend exposing (app)
 
-import Auth.Common
 import Browser
 import Browser.Dom
 import Browser.Events
 import Browser.Navigation
-import Dict
 import Json.Decode
 import Lamdera exposing (sendToBackend)
-import MagicLink.Auth
-import MagicLink.Frontend
-import MagicLink.Types
-import Pages.Admin
-import Pages.Home
-import Pages.Notes
-import Pages.SignIn
-import Pages.TermsOfService
 import Route
 import Task
 import Time
@@ -92,25 +82,20 @@ tryLoading loadingModel =
         (\window ->
             case loadingModel.route of
                 _ ->
-                    initLoaded loadingModel window |> Tuple.mapFirst Loaded
+                    ( Loaded
+                        { key = loadingModel.key
+                        , now = loadingModel.now
+                        , window = window
+                        , showTooltip = False
+                        , route = loadingModel.route
+                        , message = "Starting up ..."
+                        , counter = 0
+                        }
+                    , Cmd.none
+                    )
         )
         loadingModel.window
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
-
-
-initLoaded loadingModel window =
-    ( { key = loadingModel.key
-      , now = loadingModel.now
-      , window = window
-      , showTooltip = False
-      , route = loadingModel.route
-      , message = "Starting up ..."
-      , counter = 0
-      , magicLinkModel = Pages.SignIn.init loadingModel.initUrl
-      , users = Dict.empty
-      }
-    , Cmd.none
-    )
 
 
 updateLoaded : FrontendMsg -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
@@ -152,22 +137,24 @@ updateLoaded msg model =
         Decrement ->
             ( { model | counter = model.counter - 1 }, sendToBackend CounterDecremented )
 
-        SignInUser userData ->
-            MagicLink.Frontend.signIn model userData
-
-        AuthFrontendMsg authToFrontendMsg ->
-            MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
-
-        SetRoute_ route ->
-            ( { model | route = route }, Cmd.none )
-
-        LiftMsg _ ->
-            ( model, Cmd.none )
-
 
 scrollToTop : Cmd FrontendMsg
 scrollToTop =
     Browser.Dom.setViewport 0 0 |> Task.perform (\() -> SetViewport)
+
+
+
+--update2 : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
+--update2 msg model =
+--    case msg of
+--        Increment ->
+--            ( { model | counter = model.counter + 1 }, sendToBackend CounterIncremented )
+--
+--        Decrement ->
+--            ( { model | counter = model.counter - 1 }, sendToBackend CounterDecremented )
+--
+--        NoOp ->
+--            ( model, Cmd.none )
 
 
 updateFromBackend : ToFrontend -> FrontendModel -> ( FrontendModel, Cmd FrontendMsg )
@@ -180,16 +167,8 @@ updateFromBackend msg model =
             updateFromBackendLoaded msg loaded |> Tuple.mapFirst Loaded
 
 
+updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 updateFromBackendLoaded msg model =
     case msg of
-        UserRegistered user ->
-            MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
-
-        GotUserDictionary users ->
-            ( { model | users = users }, Cmd.none )
-
-        AuthToFrontend authToFrontendMsg ->
-            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
-
         _ ->
             ( model, Cmd.none )

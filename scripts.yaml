@@ -1,9 +1,13 @@
 scripts:
-  review:
+  install:
     - git co src/
+    - cp -r counter-original/src/. src/
+    - cp vendor-secret/Env.elm src/
     - npx elm-review --fix-all
-      # --template jxxcarlson/elm-review-codeinstaller/example
-  clean: git co src/
+
+  uninstall: cp -r counter-original/src/. src/
+
   commit:
-    - git co src/
+    - cp -r counter-original/src/. src/
+    - git co vendor/magic-link/Config.elm
     - git ci -a

@@ -4,7 +4,8 @@ This repo shows how to install magic link authentication in an existing Lamdera 
 It is still a work-in-progress.
 
 The app is at https://elm-magic-test.lamdera.app/, It was built by applying rules 
-from our package to a bare-bones Lamdera counter app.
+from [jxxcarlson/elm-review-codeinstaller](https://package.elm-lang.org/packages/jxxcarlson/elm-review-codeinstaller/latest/) to a bare-bones Lamdera counter app.
+This package is joint work with Matteus Leite.
 
 You should be able to sign up, sign in, and have at it.
 

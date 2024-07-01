@@ -67,11 +67,11 @@ loadedView model =
         TermsOfServiceRoute ->
             generic model Pages.TermsOfService.view
 
-        Notes ->
-            generic model Pages.Notes.view
-
         SignInRoute ->
             generic model (\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)
+
+        Notes ->
+            generic model Pages.Notes.view
 
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg

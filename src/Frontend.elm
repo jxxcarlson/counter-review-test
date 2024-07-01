@@ -157,17 +157,17 @@ updateLoaded msg model =
         Decrement ->
             ( { model | counter = model.counter - 1 }, sendToBackend CounterDecremented )
 
-        LiftMsg _ ->
-            ( model, Cmd.none )
-
-        SetRoute_ route ->
-            ( { model | route = route }, Cmd.none )
+        SignInUser userData ->
+            MagicLink.Frontend.signIn model userData
 
         AuthFrontendMsg authToFrontendMsg ->
             MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
 
-        SignInUser userData ->
-            MagicLink.Frontend.signIn model userData
+        SetRoute_ route ->
+            ( { model | route = route }, Cmd.none )
+
+        LiftMsg _ ->
+            ( model, Cmd.none )
 
 
 scrollToTop : Cmd FrontendMsg
@@ -202,17 +202,17 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 updateFromBackendLoaded msg model =
     case msg of
-        AuthToFrontend authToFrontendMsg ->
-            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
-
-        GotUserDictionary users ->
-            ( { model | users = users }, Cmd.none )
+        GotMessage message ->
+            ( { model | message = message }, Cmd.none )
 
         UserRegistered user ->
             MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
 
-        GotMessage message ->
-            ( { model | message = message }, Cmd.none )
+        GotUserDictionary users ->
+            ( { model | users = users }, Cmd.none )
+
+        AuthToFrontend authToFrontendMsg ->
+            MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\magicLinkModel -> { model | magicLinkModel = magicLinkModel })
 
         _ ->
             ( model, Cmd.none )

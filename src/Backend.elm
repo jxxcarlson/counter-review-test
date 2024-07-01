@@ -29,19 +29,19 @@ app =
 init : ( BackendModel, Cmd BackendMsg )
 init =
     ( { counter = 0
+      , log = []
+      , pendingLogins = AssocList.empty
+      , sessionDict = AssocList.empty
+      , secretCounter = 0
+      , pendingEmailAuths = Dict.empty
       , users = Dict.empty
+      , localUuidData = LocalUUID.initFrom4List [ 235880, 700828, 253400, 602641 ]
       , userNameToEmailString = Dict.empty
+      , pendingAuths = Dict.empty
       , sessions = Dict.empty
+      , randomAtmosphericNumbers = Just [ 235880, 700828, 253400, 602641 ]
       , sessionInfo = Dict.empty
       , time = Time.millisToPosix 0
-      , randomAtmosphericNumbers = Just [ 235880, 700828, 253400, 602641 ]
-      , pendingAuths = Dict.empty
-      , localUuidData = LocalUUID.initFrom4List [ 235880, 700828, 253400, 602641 ]
-      , log = []
-      , pendingEmailAuths = Dict.empty
-      , pendingLogins = AssocList.empty
-      , secretCounter = 0
-      , sessionDict = AssocList.empty
       }
     , Cmd.batch [ Time.now |> Task.perform GotFastTick, Helper.getAtmosphericRandomNumbers ]
     )
@@ -52,12 +52,13 @@ update msg model =
     case msg of
         ClientConnected sessionId clientId ->
             ( model, sendToFrontend clientId <| CounterNewValue model.counter clientId )
+                |> Tuple.mapSecond (\cmd -> Cmd.batch [ cmd, Reconnect.connect model sessionId clientId ])
 
         Noop ->
             ( model, Cmd.none )
 
         OnConnected sessionId clientId ->
-            Reconnect.connect model sessionId clientId
+            ( model, Reconnect.connect model sessionId clientId )
 
         AutoLogin sessionId loginData ->
             ( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )

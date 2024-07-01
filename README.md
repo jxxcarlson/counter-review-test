@@ -10,14 +10,14 @@ You should be able to sign up, sign in, and have at it.
 
 The code is here, at https://github.com/jxxcarlson/counter-review-test.
 
-- The bare-bones counter app is in counter-original-src/
-- The review rule is in review/src/ReviewConfig.elm
-- The result of applying the review rule to teh bare-bones code is in src
+- The bare-bones counter app is in `counter-original-src/`
+- The review rule is in `review/src/ReviewConfig.elm`
+- The result of applying the review rule to teh bare-bones code is in `src`
 
-You can use the Makefile to manage things if you want to try this out:
+You can use the `Makefile` to manage things if you want to try this out:
 
-- Make install: install magic-link authentication on the bare-bones app.
-- Make uninstall: the inverse of the previous step
+- `Make install`: install magic-link authentication on the bare-bones app.
+- `Make uninstall`: the inverse of the previous step
 
 If you run make install, you will get an elm-review error message.  So far,
 for me, this is a false positive.  Somethng to be fixed.  Also, I recommend

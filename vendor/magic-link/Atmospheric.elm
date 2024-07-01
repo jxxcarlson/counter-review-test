@@ -7,33 +7,8 @@ import MagicLink.Helper as Helper
 import Types
 
 
-
--- gotNumbers : (Types.BackendModel, Cmd msg)
-
-
-gotNumbers : Types.BackendModel -> Result error String -> ( Types.BackendModel, Cmd msg )
-gotNumbers model tryRandomAtmosphericNumbers =
-    let
-        randomNumbers =
-            -- TODO. Initializing the random numbers and localUuidData
-            -- is also done in Backend.init
-            -- It should only be done in one place!
-            case tryRandomAtmosphericNumbers of
-                Err _ ->
-                    [ 235880, 700828, 253400, 602641 ] |> Debug.log "XX gotNumbers: (Err_)"
-
-                Ok rns ->
-                    let
-                        parts : List Int
-                        parts =
-                            rns |> String.split "\t" |> List.map String.trim |> List.filterMap String.toInt |> Debug.log "XX gotNumbers: (Ok)"
-
-                        data : Maybe LocalUUID.Data
-                        data =
-                            LocalUUID.initFrom4List parts
-                    in
-                    parts
-    in
+gotNumbers : Types.BackendModel -> List Int -> ( Types.BackendModel, Cmd msg )
+gotNumbers model randomNumbers =
     case LocalUUID.initFrom4List randomNumbers of
         Nothing ->
             let

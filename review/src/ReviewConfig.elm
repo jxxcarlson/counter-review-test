@@ -25,11 +25,17 @@ import Regex
 import Review.Rule exposing (Rule)
 
 
-
 config =
     -- 26 rules // to configUsers
-    configAtmospheric  ++ configUsers   -- sconfigAuthTypes ++ configAuthBackend ++ configAuthFrontend
-       -- ++ configRoute -- ++ configView
+    configAtmospheric ++ configUsers ++ configAuth
+
+
+
+-- ++ configRoute -- ++ configView
+
+
+configAuth =
+    configAuthTypes ++ configAuthBackend ++ configAuthFrontend ++ configRoute
 
 
 configAtmospheric : List Rule
@@ -38,63 +44,52 @@ configAtmospheric =
       -- 13 rules, stands alone.
       Install.Import.initSimple "Types" [ "Http" ] |> Install.Import.makeRule
     , Install.Import.initSimple "Backend" [ "Atmospheric", "Dict", "Time", "Task", "MagicLink.Helper" ] |> Install.Import.makeRule
+
     --
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time : Time.Posix"
+
     --
     , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
     , Install.TypeVariant.makeRule "Types" "BackendMsg" "SetLocalUuidStuff (List Int)"
     , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
+
     --
     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
     , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+
     --
     , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
-
     , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "MagicLink.Helper.getAtmosphericRandomNumbers" ]
     ]
-
-
---type alias BackendModel =
---    { counter : Int
---    , randomAtmosphericNumbers : Maybe (List Int)
---    , localUuidData : Maybe LocalUUID.Data
---    , sessionInfo : Session.SessionInfo
---    , time : Time.Posix
---    , userNameToEmailString : Dict.Dict User.Username User.EmailString
---    , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
---    , users : Dict.Dict User.EmailString User.User
---    , pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth
---    , log : MagicLink.Types.Log
---    , sessions : Dict SessionId Auth.Common.UserInfo
---    , pendingLogins : MagicLink.Types.PendingLogins
---    , secretCounter : Int
---    , sessionDict : AssocList.Dict SessionId String
---    }
---
 
 
 configUsers : List Rule
 configUsers =
     -- 17 rules
     [ Install.Import.initSimple "Types" [ "User" ] |> Install.Import.makeRule
-     , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
-     , Install.Import.initSimple "Backend" [ "Time", "Task", "LocalUUID" ] |> Install.Import.makeRule
-     , Install.Import.init "Backend" [ { moduleToImport = "MagicLink.Helper", alias_ = Just "Helper", exposedValues = Nothing } ] |> Install.Import.makeRule
-     , Install.Import.init "Backend" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
-       --
-     , Install.Import.initSimple "Frontend" [ "Dict" ] |> Install.Import.makeRule
-      --
+    , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
+    , Install.Import.initSimple "Backend" [ "Time", "Task", "LocalUUID" ] |> Install.Import.makeRule
+    , Install.Import.init "Backend" [ { moduleToImport = "MagicLink.Helper", alias_ = Just "Helper", exposedValues = Nothing } ] |> Install.Import.makeRule
+    , Install.Import.init "Backend" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
+
+    --
+    , Install.Import.initSimple "Frontend" [ "Dict" ] |> Install.Import.makeRule
+
+    --
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
+
     --
-     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+
     --
     , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
+
     --
     , Install.Function.ReplaceFunction.init "Frontend" "tryLoading" tryLoading1
         |> Install.Function.ReplaceFunction.makeRule
@@ -160,13 +155,12 @@ configAuthFrontend =
         |> Install.ClauseInCase.makeRule
 
     -- PROBLEM IF THE CODE AT (XX) IS MOVED HERE:
-        -- If both of the two rules are active, we get an infinite loop.
-        -- If just one is, all is fine.
-
-
+    -- If both of the two rules are active, we get an infinite loop.
+    -- If just one is, all is fine.
     , Install.ClauseInCase.init "Frontend" "updateLoaded" "SetRoute_ route" "( { model | route = route }, Cmd.none )" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Frontend" "updateLoaded" "SignInUser userData" "MagicLink.Frontend.signIn model userData" |> Install.ClauseInCase.makeRule
+
     -- To Frontend
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthToFrontend Auth.Common.ToFrontend"
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "AuthSuccess Auth.Common.UserInfo"
@@ -180,11 +174,15 @@ configAuthFrontend =
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "GotUserDictionary (Dict.Dict User.EmailString User.User)"
     , Install.TypeVariant.makeRule "Types" "ToFrontend" "GotMessage String"
     , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData", "Spell String Int" ]
+
     -- (XX):
     , Install.Import.initSimple "Frontend" [ "MagicLink.Frontend", "MagicLink.Auth", "Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes" ] |> Install.Import.makeRule
     , Install.ClauseInCase.init "Frontend" "updateLoaded" "LiftMsg _" "( model, Cmd.none )" |> Install.ClauseInCase.makeRule
 
-
+    --
+    -- Causes infinite loop
+    , Install.Function.ReplaceFunction.init "Frontend" "tryLoading" tryLoading2
+        |> Install.Function.ReplaceFunction.makeRule
     ]
 
 
@@ -405,37 +403,37 @@ tryLoading loadingModel =
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )"""
 
 
---tryLoading2 =
---    """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
---tryLoading loadingModel =
---    Maybe.map
---        (\\window ->
---            case loadingModel.route of
---                _ ->
---                    let
---                        authRedirectBaseUrl =
---                            let
---                                initUrl =
---                                    loadingModel.initUrl
---                            in
---                            { initUrl | query = Nothing, fragment = Nothing }
---                    in
---                    ( Loaded
---                        { key = loadingModel.key
---                        , now = loadingModel.now
---                        , counter = 0
---                        , window = window
---                        , showTooltip = False
---                        , magicLinkModel = Pages.SignIn.init authRedirectBaseUrl
---                        , route = loadingModel.route
---                        , message = "Starting up ..."
---                        , users = Dict.empty
---                        }
---                    , Cmd.none
---                    )
---        )
---        loadingModel.window
---        |> Maybe.withDefault ( Loading loadingModel, Cmd.none )"""
+tryLoading2 =
+    """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
+tryLoading loadingModel =
+    Maybe.map
+        (\\window ->
+            case loadingModel.route of
+                _ ->
+                    let
+                        authRedirectBaseUrl =
+                            let
+                                initUrl =
+                                    loadingModel.initUrl
+                            in
+                            { initUrl | query = Nothing, fragment = Nothing }
+                    in
+                    ( Loaded
+                        { key = loadingModel.key
+                        , now = loadingModel.now
+                        , counter = 0
+                        , window = window
+                        , showTooltip = False
+                        , magicLinkModel = Pages.SignIn.init authRedirectBaseUrl
+                        , route = loadingModel.route
+                        , message = "Starting up ..."
+                        , users = Dict.empty
+                        }
+                    , Cmd.none
+                    )
+        )
+        loadingModel.window
+        |> Maybe.withDefault ( Loading loadingModel, Cmd.none )"""
 
 
 

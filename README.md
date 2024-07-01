@@ -30,7 +30,7 @@ I'm not happy about the number of rules that are applied.  Ninety-two! (This is 
 
 Part of the reason for the large surface area is that the auth code includes not just authentication, but the batteries needed to make it operational: seeding with atmospheric random numbers (the real deal, never fake), registration of users, a page to sign in and sign up, and an admin page so the administrator can see the user data.
 
-I am hard-coded as the administrator; I'll change this so that it is  onfigurable.
+I am hard-coded as the administrator; I'll change this so that it is configurable.
 
 More work to do, but I am getting there.  Once I am a bit more happy about the
 code, I will ask you to look at it so I as to make it better.

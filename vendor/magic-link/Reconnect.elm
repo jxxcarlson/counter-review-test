@@ -4,7 +4,7 @@ import AssocList
 import Auth.Common
 import Dict exposing (Dict)
 import Lamdera exposing (..)
-import MagicLink.Helper as Helper
+import MagicLink.Helper
 import Process
 import Task
 import Types
@@ -36,7 +36,7 @@ reconnect model sessionId clientId =
 connect : Types.BackendModel -> SessionId -> ClientId -> Cmd Types.BackendMsg
 connect model sessionId clientId =
     Cmd.batch
-        [ Helper.getAtmosphericRandomNumbers
+        [ MagicLink.Helper.getAtmosphericRandomNumbers
         , reconnect model sessionId clientId
         , case AssocList.get sessionId model.sessionDict of
             Just username ->

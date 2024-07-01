@@ -12,7 +12,7 @@ code and ideas from Martin Stewart, Ambue, and Mario Rogic:
 - `vendor/lamdera-auth`(Mario)
 
 If you go to [the app](https://elm-magic-test.lamdera.app/), you should be able to sign up, sign in, and have at it.  The administrator
-page is only visible to the the adminstrator.  At the moment, that is me. I will make that role configuable.
+page is only visible to the the adminstrator.  At the moment, that is me. I will make the administrator role configuable.
 
 The code is here, at https://github.com/jxxcarlson/counter-review-test.
 

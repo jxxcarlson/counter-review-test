@@ -33,9 +33,9 @@ reconnect model sessionId clientId =
     Lamdera.sendToFrontend clientId (Types.UserSignedIn maybeUser)
 
 
+connect : Types.BackendModel -> SessionId -> ClientId -> Cmd Types.BackendMsg
 connect model sessionId clientId =
-    ( model
-    , Cmd.batch
+    Cmd.batch
         [ Helper.getAtmosphericRandomNumbers
         , reconnect model sessionId clientId
         , case AssocList.get sessionId model.sessionDict of
@@ -50,4 +50,3 @@ connect model sessionId clientId =
             Nothing ->
                 Lamdera.sendToFrontend clientId (Types.AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse (Err 1))
         ]
-    )

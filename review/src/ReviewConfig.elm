@@ -26,40 +26,45 @@ import Review.Rule exposing (Rule)
 
 
 
--- CONFIG, Possibilities: configReset, configUsers
-
-
 config =
     -- 26 rules // to configUsers
-    configAtmospheric ++ configUsers ++ configAuthTypes ++ configAuthBackend ++ configAuthFrontend
-       ++ configRoute ++ configView
+    configAtmospheric -- ++ configUsers   -- sconfigAuthTypes ++ configAuthBackend ++ configAuthFrontend
+       -- ++ configRoute -- ++ configView
 
 
 configAtmospheric : List Rule
 configAtmospheric =
-    [ -- 9 rules
+    [ -- Add fields randomAtmosphericNumbers and time to BackendModel
+      -- 13 rules, stands alone.
       Install.Import.initSimple "Types" [ "Http" ] |> Install.Import.makeRule
-    , Install.Import.initSimple "Backend" [ "Atmospheric" ] |> Install.Import.makeRule
+    , Install.Import.initSimple "Backend" [ "Atmospheric", "Dict", "Time", "Task", "MagicLink.Helper" ] |> Install.Import.makeRule
+    --
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
+    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time : Time.Posix"
+    --
     , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
     , Install.TypeVariant.makeRule "Types" "BackendMsg" "SetLocalUuidStuff (List Int)"
+    , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
+    --
     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
-    , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
+    , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+    --
     , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> Install.ClauseInCase.makeRule
-    , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "Helper.getAtmosphericRandomNumbers" ]
+    , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
+
+    , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "MagicLink.Helper.getAtmosphericRandomNumbers" ]
     ]
 
 
 configUsers : List Rule
 configUsers =
-    -- 17 rules so far
+    -- 17 rules
     [ Install.Import.initSimple "Types" [ "User" ] |> Install.Import.makeRule
     , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.Username User.EmailString"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time : Time.Posix"
 
     --
     , Install.Import.initSimple "Backend" [ "Time", "Task", "LocalUUID" ] |> Install.Import.makeRule
@@ -76,11 +81,10 @@ configUsers =
     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
 
     --
-    , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
-    , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+
+
 
     --
-    , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
     , Install.Function.ReplaceFunction.init "Frontend" "tryLoading" tryLoading2
         |> Install.Function.ReplaceFunction.makeRule
     ]
@@ -88,6 +92,7 @@ configUsers =
 
 configAuthTypes : List Rule
 configAuthTypes =
+    -- 22 rules
     [ Install.Import.initSimple "Types" [ "AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session" ] |> Install.Import.makeRule
 
     -- FRONTEND MSG
@@ -125,12 +130,11 @@ configAuthTypes =
 
 configAuthFrontend : List Rule
 configAuthFrontend =
+    -- 22 rules
     [ Install.Import.initSimple "Frontend" [ "MagicLink.Types", "Auth.Common" ] |> Install.Import.makeRule
 
     -- Loaded Model
     , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Pages.SignIn.init loadingModel.initUrl"
-    --, Install.Function.ReplaceFunction.init "Frontend" "tryLoading2" tryLoading2
-    --    |> Install.Function.ReplaceFunction.makeRule
     , Install.ClauseInCase.init "Frontend" "updateFromBackendLoaded" "AuthToFrontend authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
         |> Install.ClauseInCase.withInsertAtBeginning
         |> Install.ClauseInCase.makeRule
@@ -175,6 +179,7 @@ configAuthFrontend =
 
 configAuthBackend : List Rule
 configAuthBackend =
+    -- 19 rules
     [ Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "Backend" "update" "OnConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> Install.ClauseInCase.makeRule
@@ -214,6 +219,7 @@ configAuthBackend =
 
 configRoute : List Rule
 configRoute =
+    -- 6 rules
     [ -- ROUTE
       Install.TypeVariant.makeRule "Route" "Route" "TermsOfServiceRoute"
     , Install.TypeVariant.makeRule "Route" "Route" "Notes"
@@ -225,6 +231,7 @@ configRoute =
 
 
 configView =
+    -- 8 rules
     [ -- VIEW.MAIN
       Install.ClauseInCase.init "View.Main" "loadedView" "AdminRoute" adminRoute |> Install.ClauseInCase.makeRule
     , Install.ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> Install.ClauseInCase.makeRule

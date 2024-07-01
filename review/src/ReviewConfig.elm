@@ -34,15 +34,21 @@ config =
     configAtmospheric ++ configUsers
 
 configUsers : List Rule
--- 8 rules so far
+-- 9 rules so far
 configUsers = [  Install.Import.initSimple "Types" [ "User"] |> Install.Import.makeRule
                , Install.Import.initSimple "Backend" ["Time", "Task", "LocalUUID"] |> Install.Import.makeRule
                , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
                , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
+               , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
+               , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
                , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
                , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
                , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
                , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
+               , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
+               , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
+               , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
+
 
               ]
 
@@ -52,6 +58,7 @@ configAtmospheric =  [
     Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> Install.ClauseInCase.makeRule
   , Install.ClauseInCase.init "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> Install.ClauseInCase.makeRule
   , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
+  , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
   , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
   , Install.TypeVariant.makeRule "Types" "BackendMsg" "SetLocalUuidStuff (List Int)"
   , Install.Import.initSimple "Types" [ "Http"] |> Install.Import.makeRule
@@ -84,11 +91,9 @@ configMagic =
 
 
        -- Backend Import
-       , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
 
 
        -- Backend update
-       , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "OnConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> Install.ClauseInCase.makeRule
@@ -98,7 +103,6 @@ configMagic =
 
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.SignInData"
-       , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "OnConnected SessionId ClientId"
 
        -- Loaded Model
@@ -161,13 +165,12 @@ configMagic =
 
       -- Init
 
-     , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
 
-     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
+
+
      , Install.Initializer.makeRule "Backend" "init" "sessions" "Dict.empty"
      , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "Dict.empty"
 
-     , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
      , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
      , Install.Initializer.makeRule "Backend" "init" "localUuidData" "LocalUUID.initFrom4List [ 235880, 700828, 253400, 602641 ]"
 

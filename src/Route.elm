@@ -10,8 +10,8 @@ type Route
     | CounterPageRoute
     | TermsOfServiceRoute
     | Notes
-    | AdminRoute
     | SignInRoute
+    | AdminRoute
 
 
 decode : Url -> Route

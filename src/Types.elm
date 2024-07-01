@@ -20,16 +20,16 @@ type alias BackendModel =
     { counter : Int
     , randomAtmosphericNumbers : Maybe (List Int)
     , localUuidData : Maybe LocalUUID.Data
-    , sessionInfo : Session.SessionInfo
     , time : Time.Posix
-    , userNameToEmailString : Dict.Dict User.Username User.EmailString
+    , sessionInfo : Session.SessionInfo
     , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
-    , users : Dict.Dict User.EmailString User.User
+    , userNameToEmailString : Dict.Dict User.Username User.EmailString
     , pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth
-    , log : MagicLink.Types.Log
+    , users : Dict.Dict User.EmailString User.User
     , sessions : Dict SessionId Auth.Common.UserInfo
-    , pendingLogins : MagicLink.Types.PendingLogins
+    , log : MagicLink.Types.Log
     , secretCounter : Int
+    , pendingLogins : MagicLink.Types.PendingLogins
     , sessionDict : AssocList.Dict SessionId String
     }
 

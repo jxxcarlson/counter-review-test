@@ -52,7 +52,6 @@ update msg model =
     case msg of
         ClientConnected sessionId clientId ->
             ( model, sendToFrontend clientId <| CounterNewValue model.counter clientId )
-                |> Tuple.mapSecond (\cmd -> Cmd.batch [ cmd, Reconnect.connect model sessionId clientId ])
 
         Noop ->
             ( model, Cmd.none )
@@ -106,4 +105,5 @@ updateFromFrontend sessionId clientId msg model =
 subscriptions model =
     Sub.batch
         [ Lamdera.onConnect ClientConnected
+        , Lamdera.onConnect OnConnected
         ]

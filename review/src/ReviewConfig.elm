@@ -38,37 +38,61 @@ configUsers : List Rule
 configUsers = [  Install.Import.initSimple "Types" [ "User"] |> Install.Import.makeRule
                , Install.Import.initSimple "Backend" ["Time", "Task", "LocalUUID"] |> Install.Import.makeRule
                , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
-               , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
-               , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
-               , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
-               , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+               , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
+               , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule               , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+              --
                , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
                , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
-               , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
-               , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
-               , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
+               , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.Username User.EmailString"
+               , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time : Time.Posix"
+              --
+               , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
+               , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
+              --
+               , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
                , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
-
-
+              --
+               , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
               ]
+--type alias BackendModel =
+  ----    { counter : Int
+  ----    , randomAtmosphericNumbers : Maybe (List Int)
+  ----    , localUuidData : Maybe LocalUUID.Data
+  ----    , sessionInfo : Session.SessionInfo
+  ----    , time : Time.Posix
+  ----    , userNameToEmailString : Dict.Dict User.Username User.EmailString
+  ----    , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
+  ----    , users : Dict.Dict User.EmailString User.User
+  ----    , pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth
+  ----    , log : MagicLink.Types.Log
+  ----    , sessions : Dict SessionId Auth.Common.UserInfo
+  ----    , pendingLogins : MagicLink.Types.PendingLogins
+  ----    , secretCounter : Int
+  ----    , sessionDict : AssocList.Dict SessionId String
+  ----    }
 
 configAtmospheric : List Rule
 configAtmospheric =  [
     -- 9 rules
-    Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> Install.ClauseInCase.makeRule
-  , Install.ClauseInCase.init "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> Install.ClauseInCase.makeRule
-  , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
-  , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
+    Install.Import.initSimple "Types" [ "Http"] |> Install.Import.makeRule
+  , Install.Import.initSimple "Backend" ["Atmospheric"] |> Install.Import.makeRule
+  , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
   , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
   , Install.TypeVariant.makeRule "Types" "BackendMsg" "SetLocalUuidStuff (List Int)"
-  , Install.Import.initSimple "Types" [ "Http"] |> Install.Import.makeRule
+  , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
+  , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
+  , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> Install.ClauseInCase.makeRule
+  , Install.ClauseInCase.init "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> Install.ClauseInCase.makeRule
   , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "Helper.getAtmosphericRandomNumbers" ]
-  , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
-  , Install.Import.initSimple "Backend" ["Atmospheric"] |> Install.Import.makeRule
+
+
 
 
 
   ]
+
+
+
 
 configMagic : List Rule
 configMagic =

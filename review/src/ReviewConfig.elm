@@ -204,7 +204,7 @@ configMagic =
 
  -- SUBSCRIPTION
 
-   --  , Install.Subscription.makeRule "Backend" "Lamdera.onConnect OnConnected"
+    , Install.Subscription.makeRule "Backend" "Lamdera.onConnect OnConnected"
 
     ]
 

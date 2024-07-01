@@ -8,8 +8,8 @@ from [jxxcarlson/elm-review-codeinstaller](https://package.elm-lang.org/packages
 This package is joint work with Matteus Leite.  The review rules that install authentication are in `review/src/ReviewConfig.elm`.  They rely on 
 code and ideas from Martin Stewart, Ambue, and Mario Rogic:
 
-- Code written by Martin Stewart for Ambue and used by permission of Ambue.  We thank them! See `vendor/elm-email` and `vendor/magic-link`.
-- Code written by Mario Rogic.  See `vendor/lamdera-auth`.
+- `vendor/elm-email` and `vendor/magic-link`(Martin and Ambue)
+- `vendor/lamdera-auth`(Mario)
 
 You should be able to sign up, sign in, and have at it.
 

@@ -1,10 +1,31 @@
-module Atmospheric exposing (gotNumbers)
+module Atmospheric exposing (gotNumbers, setAtmosphericRandomNumbers)
 
 import Dict
-import Lamdera
 import LocalUUID
 import MagicLink.Helper as Helper
 import Types
+
+
+setAtmosphericRandomNumbers model tryRandomAtmosphericNumbers =
+    let
+        randomNumbers : List Int
+        randomNumbers =
+            -- TODO. Initializing the random numbers and localUuidData
+            -- is also done in Backend.init
+            -- It should only be done in one place!
+            case tryRandomAtmosphericNumbers of
+                Err _ ->
+                    [ 235880, 700828, 253400, 602641 ] |> Debug.log "XX gotNumbers: (Err_)"
+
+                Ok randomNumberString ->
+                    let
+                        randomNumbers_ : List Int
+                        randomNumbers_ =
+                            randomNumberString |> String.split "\t" |> List.map String.trim |> List.filterMap String.toInt |> Debug.log "XX gotNumbers: (Ok)"
+                    in
+                    randomNumbers_
+    in
+    ( { model | randomAtmosphericNumbers = Just randomNumbers }, Helper.trigger (Types.SetLocalUuidStuff randomNumbers) )
 
 
 gotNumbers : Types.BackendModel -> List Int -> ( Types.BackendModel, Cmd msg )

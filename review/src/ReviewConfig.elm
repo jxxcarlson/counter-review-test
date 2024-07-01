@@ -57,6 +57,25 @@ configAtmospheric =
     ]
 
 
+--type alias BackendModel =
+--    { counter : Int
+--    , randomAtmosphericNumbers : Maybe (List Int)
+--    , localUuidData : Maybe LocalUUID.Data
+--    , sessionInfo : Session.SessionInfo
+--    , time : Time.Posix
+--    , userNameToEmailString : Dict.Dict User.Username User.EmailString
+--    , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
+--    , users : Dict.Dict User.EmailString User.User
+--    , pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth
+--    , log : MagicLink.Types.Log
+--    , sessions : Dict SessionId Auth.Common.UserInfo
+--    , pendingLogins : MagicLink.Types.PendingLogins
+--    , secretCounter : Int
+--    , sessionDict : AssocList.Dict SessionId String
+--    }
+--
+
+
 configUsers : List Rule
 configUsers =
     -- 17 rules
@@ -70,15 +89,12 @@ configUsers =
       --
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
-    --, Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.Username User.EmailString"
-
     --
-       , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
-
-    --
+     , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
     --
     , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
+    , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
 
     --
 

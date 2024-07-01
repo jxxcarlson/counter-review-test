@@ -28,7 +28,7 @@ import Review.Rule exposing (Rule)
 
 config =
     -- 26 rules // to configUsers
-    configAtmospheric -- ++ configUsers   -- sconfigAuthTypes ++ configAuthBackend ++ configAuthFrontend
+    configAtmospheric ++ configUsers   -- sconfigAuthTypes ++ configAuthBackend ++ configAuthFrontend
        -- ++ configRoute -- ++ configView
 
 
@@ -61,19 +61,19 @@ configUsers : List Rule
 configUsers =
     -- 17 rules
     [ Install.Import.initSimple "Types" [ "User" ] |> Install.Import.makeRule
-    , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
+     , Install.Import.init "Types" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
+     , Install.Import.initSimple "Backend" [ "Time", "Task", "LocalUUID" ] |> Install.Import.makeRule
+     , Install.Import.init "Backend" [ { moduleToImport = "MagicLink.Helper", alias_ = Just "Helper", exposedValues = Nothing } ] |> Install.Import.makeRule
+     , Install.Import.init "Backend" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
+       --
+     , Install.Import.initSimple "Frontend" [ "Dict" ] |> Install.Import.makeRule
+      --
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
     , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
-    , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.Username User.EmailString"
+    --, Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.Username User.EmailString"
 
     --
-    , Install.Import.initSimple "Backend" [ "Time", "Task", "LocalUUID" ] |> Install.Import.makeRule
-    , Install.Import.init "Backend" [ { moduleToImport = "MagicLink.Helper", alias_ = Just "Helper", exposedValues = Nothing } ] |> Install.Import.makeRule
-    , Install.Import.init "Backend" [ { moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just [ "Dict" ] } ] |> Install.Import.makeRule
-
-    --
-    , Install.Import.initSimple "Frontend" [ "Dict" ] |> Install.Import.makeRule
-    , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+       , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
 
     --
     --

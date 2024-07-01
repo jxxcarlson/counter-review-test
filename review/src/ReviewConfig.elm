@@ -31,7 +31,23 @@ import Review.Rule exposing (Rule)
 
 
 config =
-    configMagic
+    configAtmospheric ++ configMagic
+
+
+
+configAtmospheric : List Rule
+configAtmospheric =  [
+    Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
+  , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
+  , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
+  , Install.Import.initSimple "Types" [ "Http"] |> Install.Import.makeRule
+  , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "Helper.getAtmosphericRandomNumbers" ]
+  , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
+  , Install.Import.initSimple "Backend" ["Atmospheric"] |> Install.Import.makeRule
+
+
+
+  ]
 
 configMagic : List Rule
 configMagic =
@@ -39,7 +55,7 @@ configMagic =
 
 
          -- IMPORTS
-        Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User", "Http"] |> Install.Import.makeRule
+        Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User"] |> Install.Import.makeRule
        , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
 
 
@@ -58,16 +74,14 @@ configMagic =
        , Install.Import.initSimple "Backend" ["Time", "Task", "LocalUUID"] |> Install.Import.makeRule
 
        -- Backend update
-       , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "OnConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "ClientConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> Install.ClauseInCase.makeRule
 
-       , Install.InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "Helper.getAtmosphericRandomNumbers" ]
        -- BACKEND MSG
-       , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotAtmosphericRandomNumbers (Result Http.Error String)"
+
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AuthBackendMsg Auth.Common.BackendMsg"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "AutoLogin SessionId User.SignInData"
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "GotFastTick Time.Posix"
@@ -104,7 +118,7 @@ configMagic =
        -- Install Frontend
        , Install.Import.initSimple "Frontend" ["MagicLink.Frontend", "MagicLink.Auth", "Dict", "Pages.SignIn", "Pages.Home", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes"] |> Install.Import.makeRule
        -- BackendModel
-       , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "randomAtmosphericNumbers : Maybe (List Int)"
+
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "localUuidData : Maybe LocalUUID.Data"
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "time : Time.Posix"
 
@@ -130,7 +144,7 @@ configMagic =
 
        -- Import
      , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
-     , Install.Import.initSimple "Backend" ["Atmospheric", "AssocList", "Auth.Common", "Auth.Flow",
+     , Install.Import.initSimple "Backend" ["AssocList", "Auth.Common", "Auth.Flow",
        "MagicLink.Auth", "MagicLink.Backend", "Reconnect", "User"] |> Install.Import.makeRule
 
       -- Init
@@ -142,7 +156,6 @@ configMagic =
      , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "Dict.empty"
 
      , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
-     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
      , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
      , Install.Initializer.makeRule "Backend" "init" "localUuidData" "LocalUUID.initFrom4List [ 235880, 700828, 253400, 602641 ]"
 

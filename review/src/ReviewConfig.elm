@@ -55,8 +55,8 @@ configMagic =
 
        -- Backend Import
        , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
-       , Install.Import.initSimple "Backend" ["Time"] |> Install.Import.makeRule
-       , Install.Import.initSimple "Backend" ["Task"] |> Install.Import.makeRule
+       , Install.Import.initSimple "Backend" ["Time", "Task", "LocalUUID"] |> Install.Import.makeRule
+
        -- Backend update
        , Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers" "Atmospheric.gotNumbers model tryRandomAtmosphericNumbers" |> Install.ClauseInCase.makeRule
        , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
@@ -141,9 +141,9 @@ configMagic =
      , Install.Initializer.makeRule "Backend" "init" "sessionInfo" "Dict.empty"
 
      , Install.Initializer.makeRule "Backend" "init" "time" "Time.millisToPosix 0"
-     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Nothing"
+     , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
      , Install.Initializer.makeRule "Backend" "init" "pendingAuths" "Dict.empty"
-     , Install.Initializer.makeRule "Backend" "init" "localUuidData" "Nothing"
+     , Install.Initializer.makeRule "Backend" "init" "localUuidData" "LocalUUID.initFrom4List [ 235880, 700828, 253400, 602641 ]"
 
      , Install.Initializer.makeRule "Backend" "init" "pendingEmailAuths" "Dict.empty"
      , Install.Initializer.makeRule "Backend" "init" "secretCounter" "0"

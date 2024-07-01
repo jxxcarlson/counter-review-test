@@ -13,19 +13,20 @@ The code is here, at https://github.com/jxxcarlson/counter-review-test.
 
 - The bare-bones counter app is in `counter-original-src/`
 - The review rule is in `review/src/ReviewConfig.elm`
-- The result of applying the review rule to teh bare-bones code is in `src`
+- The result of applying the review rule to the bare-bones code is in `src`
 
-You can use the `Makefile` to manage things if you want to try this out:
+You can use the `Makefile` to manage things:
 
-- `Make install`: install magic-link authentication on the bare-bones app.
+- `Make install`: install magic-link authentication on a copy the bare-bones app.
 - `Make uninstall`: the inverse of the previous step
+- Use 'lamdera live` to see the results
 
 If you run `make install`, you will get an elm-review error message.  So far,
 for me, this is a false positive.  Somethng to be fixed.  Also, I recommend
 running `make install` with lamdera live in the off position.
 
-You will have to manage the Postmark secret youself to make this work.
-See `src/Config.elm` for details.
+_You will have to manage the Postmark secret youself to make this work.
+See `src/Config.elm` for details._
 
 I'm not happy about the number of rules that are applied.  Ninety-two! (This is the atomic number of uranium, not a good sign).  I would like to reduce the surface area of the auth package.
 

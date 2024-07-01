@@ -4,5 +4,5 @@ module Env exposing (postmarkApiKey)
 -- See https://dashboard.lamdera.app/docs/environment for more info.
 
 
-postmarkApiKey : String
-postmarkApiKey = "thisIsFake"
+postmarkApiKey =
+    "f25ef31c-405e-4236-9a06-a9f3e182e28c"

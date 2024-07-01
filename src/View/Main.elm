@@ -4,10 +4,15 @@ import Browser
 import Element exposing (Element)
 import Element.Background
 import Element.Font
+import Pages.Admin
 import Pages.Counter
 import Pages.Home
+import Pages.Notes
+import Pages.SignIn
+import Pages.TermsOfService
 import Route exposing (Route(..))
 import Types exposing (FrontendModel(..), FrontendMsg, LoadedModel)
+import User
 import View.Color
 
 
@@ -52,6 +57,22 @@ loadedView model =
         CounterPageRoute ->
             generic model Pages.Counter.view
 
+        AdminRoute ->
+            if User.isAdmin model.magicLinkModel.currentUserData then
+                generic model Pages.Admin.view
+
+            else
+                generic model Pages.Home.view
+
+        TermsOfServiceRoute ->
+            generic model Pages.TermsOfService.view
+
+        Notes ->
+            generic model Pages.Notes.view
+
+        SignInRoute ->
+            generic model (\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)
+
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
 generic model view_ =
@@ -72,7 +93,8 @@ generic model view_ =
 
 
 headerRow model =
-    [ headerView model model.route { window = model.window, isCompact = True } ]
+    [ headerView model model.route { window = model.window, isCompact = True }, Pages.SignIn.headerView model.magicLinkModel model.route { window = model.window, isCompact = True } |> Element.map Types.AuthFrontendMsg ]
+
 
 headerView : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element Types.FrontendMsg
 headerView model route config =

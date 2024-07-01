@@ -31,12 +31,24 @@ import Review.Rule exposing (Rule)
 
 
 config =
-    configAtmospheric ++ configMagic
+    configAtmospheric ++ configUsers
 
+configUsers : List Rule
+-- 8 rules so far
+configUsers = [  Install.Import.initSimple "Types" [ "User"] |> Install.Import.makeRule
+               , Install.Import.initSimple "Backend" ["Time", "Task", "LocalUUID"] |> Install.Import.makeRule
+               , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
+               , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
+               , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+               , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
+               , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
+               , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
 
+              ]
 
 configAtmospheric : List Rule
 configAtmospheric =  [
+    -- 9 rules
     Install.ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> Install.ClauseInCase.makeRule
   , Install.ClauseInCase.init "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> Install.ClauseInCase.makeRule
   , Install.Initializer.makeRule "Backend" "init" "randomAtmosphericNumbers" "Just [ 235880, 700828, 253400, 602641 ]"
@@ -57,8 +69,8 @@ configMagic =
 
 
          -- IMPORTS
-        Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "User"] |> Install.Import.makeRule
-       , Install.Import.init "Types" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
+        Install.Import.initSimple "Types" ["AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session"] |> Install.Import.makeRule
+
 
 
        -- TO FRONTEND
@@ -73,7 +85,7 @@ configMagic =
 
        -- Backend Import
        , Install.Import.init "Backend" [{moduleToImport = "Dict", alias_ = Nothing, exposedValues = Just ["Dict"]}] |> Install.Import.makeRule
-       , Install.Import.initSimple "Backend" ["Time", "Task", "LocalUUID"] |> Install.Import.makeRule
+
 
        -- Backend update
        , Install.ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> Install.ClauseInCase.makeRule
@@ -90,11 +102,11 @@ configMagic =
        , Install.TypeVariant.makeRule "Types" "BackendMsg" "OnConnected SessionId ClientId"
 
        -- Loaded Model
-       , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "users : Dict.Dict User.EmailString User.User"
+
        , Install.FieldInTypeAlias.makeRule "Types" "LoadedModel" "magicLinkModel : MagicLink.Types.Model"
 
        , Install.Initializer.makeRule "Frontend" "initLoaded" "magicLinkModel" "Pages.SignIn.init loadingModel.initUrl"
-       , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
+
 
         , Install.Function.ReplaceFunction.init "Frontend" "tryLoading" tryLoading
            |> Install.Function.ReplaceFunction.makeRule
@@ -133,8 +145,7 @@ configMagic =
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "pendingLogins : MagicLink.Types.PendingLogins"
 
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "log : MagicLink.Types.Log"
-       , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "users : Dict.Dict User.EmailString User.User"
-       , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "userNameToEmailString : Dict.Dict User.Username User.EmailString"
+
        , Install.FieldInTypeAlias.makeRule "Types" "BackendModel" "sessionInfo : Session.SessionInfo"
        , Install.Import.initSimple "Frontend" ["MagicLink.Types", "Auth.Common"] |> Install.Import.makeRule
 
@@ -145,7 +156,6 @@ configMagic =
         , Install.TypeVariant.makeRule "Types" "ToBackend" "GetUserDictionary"
 
        -- Import
-     , Install.Import.init "Backend" [{moduleToImport = "MagicLink.Helper", alias_ = Just "Helper",  exposedValues = Nothing}] |> Install.Import.makeRule
      , Install.Import.initSimple "Backend" ["AssocList", "Auth.Common", "Auth.Flow",
        "MagicLink.Auth", "MagicLink.Backend", "Reconnect", "User"] |> Install.Import.makeRule
 

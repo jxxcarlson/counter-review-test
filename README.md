@@ -19,9 +19,9 @@ You can use the `Makefile` to manage things if you want to try this out:
 - `Make install`: install magic-link authentication on the bare-bones app.
 - `Make uninstall`: the inverse of the previous step
 
-If you run make install, you will get an elm-review error message.  So far,
+If you run `make install`, you will get an elm-review error message.  So far,
 for me, this is a false positive.  Somethng to be fixed.  Also, I recommend
-running the make install with lamdera live in the off position.
+running `make install` with lamdera live in the off position.
 
 You will have to manage the Postmark secret youself to make this work.
 See `src/Config.elm` for details.

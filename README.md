@@ -11,7 +11,7 @@ code and ideas from Martin Stewart, Ambue, and Mario Rogic:
 - `vendor/elm-email` and `vendor/magic-link`(Martin and Ambue)
 - `vendor/lamdera-auth`(Mario)
 
-You should be able to sign up, sign in, and have at it.
+If you go to [the app](https://elm-magic-test.lamdera.app/), you should be able to sign up, sign in, and have at it.
 
 The code is here, at https://github.com/jxxcarlson/counter-review-test.
 

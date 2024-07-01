@@ -28,7 +28,7 @@ import Review.Rule exposing (Rule)
 
 config =
     -- 26 rules // to configUsers
-    configAtmospheric ++ configUsers   -- sconfigAuthTypes ++ configAuthBackend ++ configAuthFrontend
+    configAtmospheric  ++ configUsers   -- sconfigAuthTypes ++ configAuthBackend ++ configAuthFrontend
        -- ++ configRoute -- ++ configView
 
 
@@ -95,13 +95,8 @@ configUsers =
     , Install.Initializer.makeRule "Frontend" "initLoaded" "users" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "userNameToEmailString" "Dict.empty"
     , Install.Initializer.makeRule "Backend" "init" "users" "Dict.empty"
-
     --
-
-
-
-    --
-    , Install.Function.ReplaceFunction.init "Frontend" "tryLoading" tryLoading2
+    , Install.Function.ReplaceFunction.init "Frontend" "tryLoading" tryLoading1
         |> Install.Function.ReplaceFunction.makeRule
     ]
 
@@ -410,37 +405,37 @@ tryLoading loadingModel =
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )"""
 
 
-tryLoading2 =
-    """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
-tryLoading loadingModel =
-    Maybe.map
-        (\\window ->
-            case loadingModel.route of
-                _ ->
-                    let
-                        authRedirectBaseUrl =
-                            let
-                                initUrl =
-                                    loadingModel.initUrl
-                            in
-                            { initUrl | query = Nothing, fragment = Nothing }
-                    in
-                    ( Loaded
-                        { key = loadingModel.key
-                        , now = loadingModel.now
-                        , counter = 0
-                        , window = window
-                        , showTooltip = False
-                        , magicLinkModel = Pages.SignIn.init authRedirectBaseUrl
-                        , route = loadingModel.route
-                        , message = "Starting up ..."
-                        , users = Dict.empty
-                        }
-                    , Cmd.none
-                    )
-        )
-        loadingModel.window
-        |> Maybe.withDefault ( Loading loadingModel, Cmd.none )"""
+--tryLoading2 =
+--    """tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
+--tryLoading loadingModel =
+--    Maybe.map
+--        (\\window ->
+--            case loadingModel.route of
+--                _ ->
+--                    let
+--                        authRedirectBaseUrl =
+--                            let
+--                                initUrl =
+--                                    loadingModel.initUrl
+--                            in
+--                            { initUrl | query = Nothing, fragment = Nothing }
+--                    in
+--                    ( Loaded
+--                        { key = loadingModel.key
+--                        , now = loadingModel.now
+--                        , counter = 0
+--                        , window = window
+--                        , showTooltip = False
+--                        , magicLinkModel = Pages.SignIn.init authRedirectBaseUrl
+--                        , route = loadingModel.route
+--                        , message = "Starting up ..."
+--                        , users = Dict.empty
+--                        }
+--                    , Cmd.none
+--                    )
+--        )
+--        loadingModel.window
+--        |> Maybe.withDefault ( Loading loadingModel, Cmd.none )"""
 
 
 
